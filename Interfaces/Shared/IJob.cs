@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Interfaces.Shared.Capabilities;
+using System;
+using System.Collections.Generic;
 
 namespace Interfaces.Shared
 {
