@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Interfaces
+namespace Interfaces.Shared
 {
-	public interface IJob
+	public interface IClient
 	{
 		string Name {
 			get;
@@ -12,6 +12,8 @@ namespace Interfaces
 		int Id {
 			get;
 		}
+
+		IResult RunJob (IJob job);
 	}
 }
 

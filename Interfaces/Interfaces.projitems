@@ -9,8 +9,18 @@
     <Import_RootNamespace>Interfaces</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)IClient.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)IServer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)IJob.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shared\IClient.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shared\IJob.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shared\IResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shared\Capabilities\ICapability.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Server\IServer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Server\IClientSelection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Server\IServerResult.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Shared\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Client\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Server\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Shared\Capabilities\" />
   </ItemGroup>
 </Project>
