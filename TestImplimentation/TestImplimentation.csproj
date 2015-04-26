@@ -36,9 +36,9 @@
     <Compile Include="TestServer.cs" />
     <Compile Include="TestServerResult.cs" />
     <Compile Include="TestClient.cs" />
-    <Compile Include="TestResult.cs" />
     <Compile Include="TestJob.cs" />
     <Compile Include="TestClientSecetion.cs" />
+    <Compile Include="TestResult.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

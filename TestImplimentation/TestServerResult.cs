@@ -16,7 +16,7 @@ namespace TestImplimentation
 		)
 		{
 			TimeTaken = timeTaken;
-			clientResults = ClientResults;
+			ClientResults = clientResults;
 			Success = success;
 			request = Request;
 		}

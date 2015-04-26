@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Interfaces.Shared;
 using Interfaces.Shared.Capabilities;
 using Interfaces.Server;
@@ -22,7 +23,10 @@ namespace TestImplimentation
 
 			IServerResult serverResult = server.RubJob (job);
 
-			Console.Write (serverResult.Success);
+			Console.WriteLine (serverResult.Success);
+			foreach (string x in serverResult.Result.Keys) {
+				Console.WriteLine ("{0} = {1}", x, serverResult.Result [x]);
+			}
 		}
 	}
 }

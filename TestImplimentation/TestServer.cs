@@ -97,8 +97,10 @@ namespace TestImplimentation
 
 			TimeSpan timeTaken = clientExecutionTime.Elapsed;
 
-			IDictionary<IClient, IResult> clientResults = 
-				clientRunTasks.Keys.ToDictionary (c => c, t => clientRunTasks [t].Result);
+			IDictionary<IClient, IResult> clientResults = new Dictionary<IClient, IResult> ();
+			foreach (var client in clientRunTasks.Keys) {
+				clientResults.Add (client, clientRunTasks [client].Result);	
+			}
 
 			IServerResult result = new TestServerResult (
 				                       timeTaken,

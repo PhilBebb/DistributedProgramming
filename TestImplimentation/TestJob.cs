@@ -7,12 +7,12 @@ namespace TestImplimentation
 {
 	public class TestJob : IJob
 	{
-		public TestJob (string name, int id, IEnumerable<ICapability> requiredCapabilities, IDictionary<string, string> ParameterValues)
+		public TestJob (string name, int id, IEnumerable<ICapability> requiredCapabilities, IDictionary<string, string> parameterValues)
 		{
 			Name = name;
 			Id = id;
 			RequiredCapabilities = requiredCapabilities;
-			ParameterValues = ParameterValues;
+			ParameterValues = parameterValues;
 		}
 
 		public string Name {
