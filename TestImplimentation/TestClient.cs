@@ -21,7 +21,7 @@ namespace TestImplimentation
 
 		public IResult RunJob (IJob job)
 		{
-			return new TestResult (
+			return new SimpleImplementations.SimpleResult (
 				true,
 				new Dictionary<string, string>{ { "param1", "p1Val" }, { "param2", "p2Val" } }
 				, job);
@@ -30,7 +30,7 @@ namespace TestImplimentation
 
 		public async Task<IResult> RunJobAsync (IJob job)
 		{
-			return new TestResult (
+			return new SimpleImplementations.SimpleResult (
 				true,
 				new Dictionary<string, string>{ { "param1", "p1Val" }, { "param2", "p2Val" } }
 				, job);

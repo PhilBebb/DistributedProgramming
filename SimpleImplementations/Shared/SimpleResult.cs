@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using Interfaces.Shared;
 
-namespace TestImplimentation
+namespace SimpleImplementations
 {
-	public class TestResult : IResult
+	public class SimpleResult : IResult
 	{
-		public TestResult (bool success, IDictionary<string, string> result, IJob request)
+		public SimpleResult (bool success, IDictionary<string, string> result, IJob request)
 		{
 			Success = success;
 			Result = result;
@@ -30,4 +30,3 @@ namespace TestImplimentation
 
 	}
 }
-

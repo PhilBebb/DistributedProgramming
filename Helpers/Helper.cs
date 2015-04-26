@@ -24,6 +24,11 @@ namespace Helpers
 			return Newtonsoft.Json.JsonConvert.DeserializeObject<InternalJob> (jobJson);
 		}
 
+		public static string ResultToJson (IResult result)
+		{
+			return Newtonsoft.Json.JsonConvert.SerializeObject (result);
+		}
+
 		public static IResult JsonToResult (string resultJson)
 		{
 			return Newtonsoft.Json.JsonConvert.DeserializeObject<InternalResult> (resultJson);

@@ -38,11 +38,13 @@
     <Compile Include="Server\RemoteNetworkedClient.cs" />
     <Compile Include="Client\RemoteClient.cs" />
     <Compile Include="Server\Server.cs" />
+    <Compile Include="Internal\InternalHelper.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Server\" />
     <Folder Include="Client\" />
+    <Folder Include="Internal\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

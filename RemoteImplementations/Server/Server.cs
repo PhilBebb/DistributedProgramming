@@ -70,7 +70,7 @@ namespace RemoteImplementations
 
 		public IEnumerable<IClient> GetConnectedClients ()
 		{
-			throw new NotImplementedException ();
+			return _clients.AsParallel ().Where (c => c.Ping ());
 		}
 
 		public Task<IEnumerable<IClient>> GetConnectedClientsAsync ()

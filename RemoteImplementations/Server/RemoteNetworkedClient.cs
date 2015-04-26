@@ -31,9 +31,9 @@ namespace RemoteImplementations
 		{
 			string jsonJob = Helpers.Helper.JobToJson (job);
 
-			SendJson (jsonJob);
+			InternalHelper.SendJson (jsonJob, _client.Client);
 
-			var result = ReadJson ();
+			var result = InternalHelper.ReadResultAsJson (_client.Client);
 			return result;
 		}
 
@@ -41,54 +41,10 @@ namespace RemoteImplementations
 		{
 			string jsonJob = Helpers.Helper.JobToJson (job);
 
-			await SendJsonAsync (jsonJob);
+			await InternalHelper.SendJsonAsync (jsonJob, _client.Client);
 
-			IResult result = await ReadJsonAsync ();
+			IResult result = await InternalHelper.ReadResultAsJsonAsync (_client.Client);
 			return result;
-		}
-
-		private void SendJson (string json)
-		{
-			if (string.IsNullOrWhiteSpace (json))
-				return;
-			using (NetworkStream netSream = _client.GetStream ()) {
-				using (StreamWriter streamWriter = new StreamWriter (_client.GetStream ())) {
-					streamWriter.WriteAsync (json);
-					streamWriter.Flush ();
-				}
-			}
-		}
-
-		private async Task SendJsonAsync (string json)
-		{
-			if (string.IsNullOrWhiteSpace (json))
-				return;
-			using (NetworkStream netSream = _client.GetStream ()) {
-				using (StreamWriter streamWriter = new StreamWriter (_client.GetStream ())) {
-					await streamWriter.WriteAsync (json);
-					streamWriter.Flush ();
-				}
-			}
-		}
-
-		private async Task<IResult> ReadJsonAsync ()
-		{
-			using (NetworkStream netSream = _client.GetStream ()) {
-				using (var streamReader = new StreamReader (netSream)) {
-					var jsonResult = await streamReader.ReadToEndAsync ();
-					return Helpers.Helper.JsonToResult (jsonResult);
-				}
-			}
-		}
-
-		private IResult ReadJson ()
-		{
-			using (NetworkStream netSream = _client.GetStream ()) {
-				using (var streamReader = new StreamReader (netSream)) {
-					string jsonResult = streamReader.ReadToEnd ();
-					return Helpers.Helper.JsonToResult (jsonResult);
-				}
-			}
 		}
 
 		public bool Ping ()

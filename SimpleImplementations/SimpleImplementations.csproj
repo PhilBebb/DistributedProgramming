@@ -34,10 +34,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Server\SimpleClientSelection.cs" />
     <Compile Include="Server\SimpleServerResult.cs" />
+    <Compile Include="Shared\SimpleResult.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Server\" />
+    <Folder Include="Shared\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Interfaces\Interfaces.csproj">
