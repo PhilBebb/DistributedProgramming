@@ -21,10 +21,11 @@ namespace RemoteImplementations
 		public RemoteNetworkedClient (TcpClient client, string name)
 		{
 			Name = name;
+			_client = client;
+
 			if (!_client.Connected) {
 				throw new InvalidOperationException ("The client is not connected");
 			}
-			_client = client;
 		}
 
 		public IResult RunJob (IJob job)

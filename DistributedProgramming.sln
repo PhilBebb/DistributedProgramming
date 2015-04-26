@@ -15,12 +15,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemoteImplementations", "Re
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleImplementations", "SimpleImplementations\SimpleImplementations.csproj", "{FC210992-DCB8-4CF4-9D7B-E860753B66F4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestRemoteClientImplimentation", "TestRemoteClientImplimentation\TestRemoteClientImplimentation.csproj", "{2BAD0A34-8FE3-4C62-AEDC-18FF26B1AF51}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2BAD0A34-8FE3-4C62-AEDC-18FF26B1AF51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BAD0A34-8FE3-4C62-AEDC-18FF26B1AF51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BAD0A34-8FE3-4C62-AEDC-18FF26B1AF51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BAD0A34-8FE3-4C62-AEDC-18FF26B1AF51}.Release|Any CPU.Build.0 = Release|Any CPU
 		{381B49B2-7CAF-42F6-BAB1-5F653E66E72D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{381B49B2-7CAF-42F6-BAB1-5F653E66E72D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{381B49B2-7CAF-42F6-BAB1-5F653E66E72D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -47,7 +53,7 @@ Global
 		{FC210992-DCB8-4CF4-9D7B-E860753B66F4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = TestImplimentation\TestImplimentation.csproj
+		StartupItem = TestRemoteClientImplimentation\TestRemoteClientImplimentation.csproj
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

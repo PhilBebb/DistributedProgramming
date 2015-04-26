@@ -35,14 +35,14 @@ namespace RemoteImplementations
 			_listener.Start ();
 			Log ("Started");
 
-			while (true) {
-				try {
-					var tcpClient = await _listener.AcceptTcpClientAsync ();
-					await HandleConnectionAsync (tcpClient);
-				} catch (Exception ex) {
-					Log (string.Format ("Exception : {0}", ex.Message));
-				}
+			//while (true) {
+			try {
+				var tcpClient = _listener.AcceptTcpClient ();
+				await HandleConnectionAsync (tcpClient);
+			} catch (Exception ex) {
+				Log (string.Format ("Exception : {0}", ex.Message));
 			}
+			//}
 		}
 
 		private async Task HandleConnectionAsync (TcpClient tcpClient)

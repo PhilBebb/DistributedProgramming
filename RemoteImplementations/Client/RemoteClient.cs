@@ -20,19 +20,26 @@ namespace RemoteImplementations
 
 		public async void Start (IPAddress address, int port)
 		{
-			await _client.ConnectAsync (address, port);
+			Console.WriteLine ("Starting");
+			_client.ConnectAsync (address, port);
+			Console.WriteLine ("Connected");
+
 			_sock = _client.Client;
-			await SendHelloAsync ();
+			SendHelloAsync ();
 
 			while (true) {
-				IJob job = InternalHelper.ReadJobAsJsonAsync (_sock).Result;
+				Console.WriteLine ("Waiting for job");
+				var job = await InternalHelper.ReadJobAsJsonAsync (_sock);
+				Console.WriteLine ("job get!");
 
 				IResult result = new SimpleResult (
 					                 true,
 					                 new Dictionary<string, string>{ { "p1", "a" }, { "p2", "b" } },
 					                 job
 				                 );
+				Console.WriteLine ("Sending result");
 				InternalHelper.SendJson (Helpers.Helper.ResultToJson (result), _sock);
+				Console.WriteLine ("Result sent");
 			}
 		}
 

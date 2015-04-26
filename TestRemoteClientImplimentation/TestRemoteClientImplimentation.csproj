@@ -3,10 +3,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{BD107D90-4DBF-4FA3-B71D-E896C833A1A9}</ProjectGuid>
+    <ProjectGuid>{2BAD0A34-8FE3-4C62-AEDC-18FF26B1AF51}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>TestImplimentation</RootNamespace>
-    <AssemblyName>TestImplimentation</AssemblyName>
+    <RootNamespace>TestRemoteClientImplimentation</RootNamespace>
+    <AssemblyName>TestRemoteClientImplimentation</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -33,28 +33,9 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestServer.cs" />
-    <Compile Include="TestClient.cs" />
-    <Compile Include="TestJob.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\Helpers\Helpers.csproj">
-      <Project>{3C6FF811-7E50-4EEC-BEDF-2CEBDC8E9B37}</Project>
-      <Name>Helpers</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Capabilities\Capabilities.csproj">
-      <Project>{9E4AE89D-0962-4B11-9243-67E48CA598F8}</Project>
-      <Name>Capabilities</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Interfaces\Interfaces.csproj">
-      <Project>{501046D8-49EC-42B0-93A4-DE87480A5B54}</Project>
-      <Name>Interfaces</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SimpleImplementations\SimpleImplementations.csproj">
-      <Project>{FC210992-DCB8-4CF4-9D7B-E860753B66F4}</Project>
-      <Name>SimpleImplementations</Name>
-    </ProjectReference>
     <ProjectReference Include="..\RemoteImplementations\RemoteImplementations.csproj">
       <Project>{381B49B2-7CAF-42F6-BAB1-5F653E66E72D}</Project>
       <Name>RemoteImplementations</Name>
