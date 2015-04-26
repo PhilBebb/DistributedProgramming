@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using Interfaces.Shared.Capabilities;
 
 namespace Interfaces.Shared
 {
@@ -14,6 +16,10 @@ namespace Interfaces.Shared
 		}
 
 		IResult RunJob (IJob job);
+
+		bool Ping ();
+
+		IEnumerable<ICapability> Capabilities { get; }
 	}
 }
 

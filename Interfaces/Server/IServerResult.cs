@@ -2,7 +2,7 @@
 using Interfaces.Shared;
 using System.Collections.Generic;
 
-namespace Interfaces
+namespace Interfaces.Server
 {
 	public interface IServerResult : Interfaces.Shared.IResult
 	{

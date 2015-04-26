@@ -11,7 +11,7 @@ namespace Interfaces.Server
 		/// This can be one or many
 		/// </summary>
 		/// <returns>The next client(s).</returns>
-		IEnumerable<IClient> GetBestClients (IJob jobToRun);
+		IEnumerable<IClient> GetBestClients (IJob jobToRun, IServer server);
 	}
 }
 
