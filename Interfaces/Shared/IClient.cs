@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Interfaces.Shared.Capabilities;
+using System.Threading.Tasks;
 
 namespace Interfaces.Shared
 {
@@ -16,6 +17,8 @@ namespace Interfaces.Shared
 		}
 
 		IResult RunJob (IJob job);
+
+		Task<IResult> RunJobAsync (IJob job);
 
 		bool Ping ();
 

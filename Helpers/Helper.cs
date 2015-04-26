@@ -1,4 +1,6 @@
 ﻿using System;
+using Interfaces.Shared;
+using Helpers.Internal;
 
 namespace Helpers
 {
@@ -12,6 +14,20 @@ namespace Helpers
 			}
 		}
 
+		public static string JobToJson (IJob job)
+		{
+			return Newtonsoft.Json.JsonConvert.SerializeObject (job);
+		}
+
+		public static IJob JsonToJob (string jobJson)
+		{
+			return Newtonsoft.Json.JsonConvert.DeserializeObject<InternalJob> (jobJson);
+		}
+
+		public static IResult JsonToResult (string resultJson)
+		{
+			return Newtonsoft.Json.JsonConvert.DeserializeObject<InternalResult> (resultJson);
+		}
 	}
 }
 

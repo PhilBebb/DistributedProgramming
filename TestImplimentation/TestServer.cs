@@ -102,7 +102,7 @@ namespace TestImplimentation
 				clientResults.Add (client, clientRunTasks [client].Result);	
 			}
 
-			IServerResult result = new TestServerResult (
+			IServerResult result = new SimpleImplementations.SimpleServerResult (
 				                       timeTaken,
 				                       clientResults,
 				                       clientResults.Values.Any (r => r.Success),
@@ -110,7 +110,7 @@ namespace TestImplimentation
 			return result;
 		}
 
-		private IClientSelection _clientSelectionMethod = new TestClientSecetion ();
+		private IClientSelection _clientSelectionMethod = new SimpleImplementations.SimpleClientSelection ();
 
 		public IClientSelection ClientSelectionMethod {
 			get {

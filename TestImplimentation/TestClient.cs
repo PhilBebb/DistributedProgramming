@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Interfaces;
 using Interfaces.Shared;
 using Interfaces.Shared.Capabilities;
+using System.Threading.Tasks;
 
 namespace TestImplimentation
 {
@@ -26,6 +26,16 @@ namespace TestImplimentation
 				new Dictionary<string, string>{ { "param1", "p1Val" }, { "param2", "p2Val" } }
 				, job);
 		}
+
+
+		public async Task<IResult> RunJobAsync (IJob job)
+		{
+			return new TestResult (
+				true,
+				new Dictionary<string, string>{ { "param1", "p1Val" }, { "param2", "p2Val" } }
+				, job);
+		}
+
 
 		public bool Ping ()
 		{

@@ -3,11 +3,11 @@ using Interfaces.Server;
 using Interfaces.Shared;
 using System.Collections.Generic;
 
-namespace TestImplimentation
+namespace SimpleImplementations
 {
-	public class TestClientSecetion : IClientSelection
+	public class SimpleClientSelection : IClientSelection
 	{
-		public TestClientSecetion ()
+		public SimpleClientSelection ()
 		{
 		}
 
@@ -18,4 +18,3 @@ namespace TestImplimentation
 
 	}
 }
-

@@ -4,11 +4,11 @@ using System.Linq;
 using Interfaces.Server;
 using Interfaces.Shared;
 
-namespace TestImplimentation
+namespace SimpleImplementations
 {
-	public class TestServerResult  :IServerResult
+	public class SimpleServerResult  :IServerResult
 	{
-		public TestServerResult (
+		public SimpleServerResult (
 			TimeSpan timeTaken, 
 			IDictionary<IClient, IResult> clientResults,
 			bool success,
@@ -51,7 +51,7 @@ namespace TestImplimentation
 			get;
 			private set;
 		}
-				
+
 	}
 }
 
