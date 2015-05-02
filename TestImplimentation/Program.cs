@@ -7,54 +7,54 @@ using Interfaces.Server;
 using RemoteImplementations;
 using System.Threading.Tasks;
 
-namespace TestImplimentation
-{
-    class MainClass
-    {
-        public static void Main(string[] args)
-        {
-            //			RunTestServer ();
-            RunTestNetworkServer();
-        }
+namespace TestImplimentation {
+	class MainClass {
+		public static void Main (string[] args) {
+			//			RunTestServer ();
+			RunTestNetworkServer ();
+		}
 
-        static async void RunTestNetworkServer()
-        {
+		static void RunTestNetworkServer () {
 
-            const int serverPort = 63564;
+			const int serverPort = 63564;
 
-            Server remoteServer = new Server(serverPort, new SimpleImplementations.SimpleClientSelection());
-            remoteServer.Start();
+			Server remoteServer = new Server (serverPort, new SimpleImplementations.SimpleClientSelection ());
+			//remoteServer.Start ();
+			Task.Factory.StartNew (remoteServer.Start);
 
-            while (!remoteServer.GetConnectedClients().Any())
-            {
-                System.Threading.Thread.Sleep(100);
-            }
+			while (!remoteServer.GetConnectedClients ().Any ()) {
+				System.Threading.Thread.Sleep (100);
+			}
 
-            IJob job = new TestJob("test job", 1, null, null);
+			IJob job = new TestJob ("test job", 1, null, null);
 
-            Task.Factory.StartNew(remoteServer.Start);
+			var result = remoteServer.RubJob (job);
+			Console.WriteLine ("The result was {0}", result.Success);
+			Console.WriteLine (string.Join (Environment.NewLine, result.Result.Select (r => string.Format ("{0} : {1}", r.Key, r.Value))));
 
-            var result = await remoteServer.RubJobAsync(job);
+			result = remoteServer.RubJob (job);
+			Console.WriteLine ("The result was {0}", result.Success);
+			Console.WriteLine (string.Join (Environment.NewLine, result.Result.Select (r => string.Format ("{0} : {1}", r.Key, r.Value))));
 
-            Console.WriteLine("Done");
-            Console.WriteLine("The result was {0}", result.Success);
-            Console.WriteLine(string.Join(Environment.NewLine, result.Result.Select(r => string.Format("{0} : {1}", r.Key, r.Value))));
-            Console.ReadLine();
-        }
+			result = remoteServer.RubJob (job);
+			Console.WriteLine ("The result was {0}", result.Success);
+			Console.WriteLine (string.Join (Environment.NewLine, result.Result.Select (r => string.Format ("{0} : {1}", r.Key, r.Value))));
 
-        static void RunTestServer()
-        {
-            Console.WriteLine("Lets go!");
-            IServer server = new TestServer();
-            IClient client = new TestClient();
-            server.AddClient(client);
-            IJob job = new TestJob("Test", 23, new List<ICapability>(), new Dictionary<string, string>());
-            IServerResult serverResult = server.RubJob(job);
-            Console.WriteLine(serverResult.Success);
-            foreach (string x in serverResult.Result.Keys)
-            {
-                Console.WriteLine("{0} = {1}", x, serverResult.Result[x]);
-            }
-        }
-    }
+			Console.WriteLine ("Done");
+			Console.ReadLine ();
+		}
+
+		static void RunTestServer () {
+			Console.WriteLine ("Lets go!");
+			IServer server = new TestServer ();
+			IClient client = new TestClient ();
+			server.AddClient (client);
+			IJob job = new TestJob ("Test", 23, new List<ICapability> (), new Dictionary<string, string> ());
+			IServerResult serverResult = server.RubJob (job);
+			Console.WriteLine (serverResult.Success);
+			foreach (string x in serverResult.Result.Keys) {
+				Console.WriteLine ("{0} = {1}", x, serverResult.Result [x]);
+			}
+		}
+	}
 }

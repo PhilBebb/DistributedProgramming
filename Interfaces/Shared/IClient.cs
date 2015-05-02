@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using Interfaces.Shared.Capabilities;
 using System.Threading.Tasks;
 
-namespace Interfaces.Shared
-{
-	public interface IClient
-	{
+namespace Interfaces.Shared {
+	public interface IClient {
 		string Name {
 			get;
 			set;
@@ -18,7 +16,7 @@ namespace Interfaces.Shared
 
 		IResult RunJob (IJob job);
 
-		Task<IResult> RunJobAsync (IJob job);
+		//Task<IResult> RunJobAsync (IJob job);
 
 		bool Ping ();
 

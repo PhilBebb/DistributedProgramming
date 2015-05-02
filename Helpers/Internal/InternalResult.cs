@@ -1,17 +1,14 @@
 ﻿using System;
 using Interfaces.Shared;
 using System.Collections.Generic;
+using Newtonsoft.Json.Converters;
 
-namespace Helpers.Internal
-{
-	internal class InternalResult : IResult
-	{
-		public InternalResult ()
-		{
+namespace Helpers.Internal {
+	internal class InternalResult : IResult {
+		public InternalResult () {
 		}
 
-		public InternalResult (IResult result)
-		{
+		public InternalResult (IResult result) {
 			Success = result.Success;
 			Result = result.Result;
 			Request = result.Request;
@@ -33,5 +30,10 @@ namespace Helpers.Internal
 		}
 
 	}
-}
 
+	public class ResultConverter : CustomCreationConverter<IResult> {
+		public override IResult Create (Type objectType) {
+			return new InternalResult ();
+		}
+	}
+}

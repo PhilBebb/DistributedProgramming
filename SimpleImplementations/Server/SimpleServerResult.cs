@@ -4,21 +4,18 @@ using System.Linq;
 using Interfaces.Server;
 using Interfaces.Shared;
 
-namespace SimpleImplementations
-{
-	public class SimpleServerResult  :IServerResult
-	{
+namespace SimpleImplementations {
+	public class SimpleServerResult  :IServerResult {
 		public SimpleServerResult (
 			TimeSpan timeTaken, 
 			IDictionary<IClient, IResult> clientResults,
 			bool success,
 			IJob request
-		)
-		{
+		) {
 			TimeTaken = timeTaken;
 			ClientResults = clientResults;
 			Success = success;
-			request = Request;
+			Request = request;
 		}
 
 		public TimeSpan TimeTaken {

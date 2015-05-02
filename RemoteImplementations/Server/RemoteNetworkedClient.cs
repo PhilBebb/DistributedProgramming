@@ -7,19 +7,16 @@ using System.Net.Sockets;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace RemoteImplementations
-{
+namespace RemoteImplementations {
 
 	/// <summary>
 	/// An implimentation of IClient over a network
 	/// Will require a RemoteClient on the other side to actually talk to
 	/// </summary>
-	public class RemoteNetworkedClient : IClient
-	{
+	public class RemoteNetworkedClient : IClient {
 		private TcpClient _client = null;
 
-		public RemoteNetworkedClient (TcpClient client, string name)
-		{
+		public RemoteNetworkedClient (TcpClient client, string name) {
 			Name = name;
 			_client = client;
 
@@ -28,28 +25,26 @@ namespace RemoteImplementations
 			}
 		}
 
-		public IResult RunJob (IJob job)
-		{
+		public IResult RunJob (IJob job) {
 			string jsonJob = Helpers.Helper.JobToJson (job);
 
-			InternalHelper.SendJson (jsonJob, _client.Client);
+			InternalHelper.SendJson (jsonJob, _client);
 
-			var result = InternalHelper.ReadResultAsJson (_client.Client);
+			var result = InternalHelper.ReadResultAsJson (_client);
 			return result;
 		}
 
-		public async Task<IResult> RunJobAsync (IJob job)
-		{
-			string jsonJob = Helpers.Helper.JobToJson (job);
+		//		public async Task<IResult> RunJobAsync (IJob job)
+		//		{
+		//			string jsonJob = Helpers.Helper.JobToJson (job);
+		//
+		//			await InternalHelper.SendJsonAsync (jsonJob, _client.Client);
+		//
+		//			IResult result = await InternalHelper.ReadResultAsJsonAsync (_client.Client);
+		//			return result;
+		//		}
 
-			await InternalHelper.SendJsonAsync (jsonJob, _client.Client);
-
-			IResult result = await InternalHelper.ReadResultAsJsonAsync (_client.Client);
-			return result;
-		}
-
-		public bool Ping ()
-		{
+		public bool Ping () {
 			return _client.Connected;
 		}
 

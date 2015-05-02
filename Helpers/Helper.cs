@@ -2,10 +2,8 @@
 using Interfaces.Shared;
 using Helpers.Internal;
 
-namespace Helpers
-{
-	public static class Helper
-	{
+namespace Helpers {
+	public static class Helper {
 		public static bool IsWindows {
 			get {
 				//shamelessly taken from Mono
@@ -14,25 +12,29 @@ namespace Helpers
 			}
 		}
 
-		public static string JobToJson (IJob job)
-		{
+		public static string JobToJson (IJob job) {
 			return Newtonsoft.Json.JsonConvert.SerializeObject (job);
 		}
 
-		public static IJob JsonToJob (string jobJson)
-		{
-			return Newtonsoft.Json.JsonConvert.DeserializeObject<InternalJob> (jobJson);
+		public static IJob JsonToJob (string jobJson) {
+			return Newtonsoft.Json.JsonConvert.DeserializeObject<InternalJob> (jobJson, 
+				new ResultConverter (),
+				new JobConverter (),
+				new CapabilityConverter ()
+			);
 		}
 
-		public static string ResultToJson (IResult result)
-		{
+		public static string ResultToJson (IResult result) {
 			return Newtonsoft.Json.JsonConvert.SerializeObject (result);
 		}
 
-		public static IResult JsonToResult (string resultJson)
-		{
-			return Newtonsoft.Json.JsonConvert.DeserializeObject<InternalResult> (resultJson);
+		public static IResult JsonToResult (string resultJson) {
+			return Newtonsoft.Json.JsonConvert.DeserializeObject<InternalResult> (resultJson, 
+				new ResultConverter (),
+				new JobConverter (),
+				new CapabilityConverter ()
+			);
+		
 		}
 	}
 }
-

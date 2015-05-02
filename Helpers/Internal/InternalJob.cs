@@ -2,18 +2,15 @@
 using Interfaces.Shared;
 using System.Collections.Generic;
 using Interfaces.Shared.Capabilities;
+using Newtonsoft.Json.Converters;
 
-namespace Helpers.Internal
-{
-	internal class InternalJob : IJob
-	{
-		public InternalJob ()
-		{
+namespace Helpers.Internal {
+	internal class InternalJob : IJob {
+		public InternalJob () {
 			
 		}
 
-		public InternalJob (IJob job)
-		{
+		public InternalJob (IJob job) {
 			Name = job.Name;
 			Id = job.Id;
 			RequiredCapabilities = job.RequiredCapabilities;
@@ -40,6 +37,12 @@ namespace Helpers.Internal
 			set;
 		}
 
+	}
+
+	public class JobConverter : CustomCreationConverter<IJob> {
+		public override IJob Create (Type objectType) {
+			return new InternalJob ();
+		}
 	}
 }
 
