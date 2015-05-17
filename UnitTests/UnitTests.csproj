@@ -34,8 +34,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SimpleServerTests.cs" />
     <Compile Include="Mocks\MockClient.cs" />
+    <Compile Include="RemoteServerTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
