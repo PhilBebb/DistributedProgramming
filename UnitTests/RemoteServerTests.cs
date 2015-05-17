@@ -4,6 +4,7 @@ using NUnit.Framework;
 using Interfaces.Server;
 using RemoteImplementations;
 using Interfaces.Shared;
+using System.Collections.Generic;
 
 namespace UnitTests {
 	[TestFixture ()]
@@ -94,7 +95,7 @@ namespace UnitTests {
 			MockClient pingTrue = new MockClient ("pingTrue");
 
 			//create a client that will ping false
-			MockClient pingFalse = new MockClient ("pingFalse"){ OveridePingResult = false };
+			MockClient pingFalse = new MockClient ("pingFalse"){ PingOverride = false };
 
 			//add clients
 			server.AddClient (pingTrue);
@@ -116,7 +117,7 @@ namespace UnitTests {
 			Assert.IsFalse (server.PingClient (pingFalse), "pingFalse client not pinging as expected");
 
 			//set pingFalseToNowConnect
-			pingFalse.OveridePingResult = true;
+			pingFalse.PingOverride = true;
 			expectedCount = 2;
 			clients = server.GetConnectedClients ().ToList ();
 			actualCount = clients.Count ();
@@ -125,6 +126,48 @@ namespace UnitTests {
 			Assert.IsTrue (clients.Contains (pingFalse), "pingTrue client not found in connected client list");
 			KillServer (server);
 		}
+
+		[Test]
+		public void RunJobCallsClientsMethod () {
+			var server = CreateServer ();
+
+			bool simpleJobCalled = false;
+			var simpleJobParams = new Dictionary<string,string> {
+				{ "param1", "val1" }, { "param2", "val2" }, { "param3", "val3" }, { "param4", "val4" }
+			};
+
+			MockClient simpleJobClient = new MockClient { 
+				RunJobOverride = (IJob job) => {
+					simpleJobCalled = true;
+					return new SimpleImplementations.SimpleResult (true, simpleJobParams, job);
+				}
+			};
+
+			server.AddClient (simpleJobClient);
+			IServerResult result = server.RubJob (new MockJob ());
+			Assert.IsNotNull (result, "Server result was null");
+
+			//check the mothod actually ran
+			Assert.IsTrue (simpleJobCalled, "The \"called\" variable was not set, so the client run job method was not called");
+
+			//check results back
+			Assert.IsTrue (result.ClientResults.ContainsKey (simpleJobClient), "ClientResults does not contain simpleJobClient");
+			Assert.IsTrue (result.ClientResults [simpleJobClient].Success, "simpleJobClient result was not true");
+
+			//check all the params are there
+			foreach (string key in simpleJobParams.Keys) {
+				Assert.AreEqual (simpleJobParams [key], result.ClientResults [simpleJobClient].Result [key], "The key {0} was not found in the dictionary", key);
+			}
+
+			//test logic goes here!
+			KillServer (server);
+		}
+
+		//other tests to add
+		//multiple clients all run
+		//mix of success and fails
+		//clients throwing an error does not bork the method
+		//a lot more!
 	}
 }
 

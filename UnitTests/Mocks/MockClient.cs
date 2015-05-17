@@ -29,21 +29,30 @@ namespace UnitTests {
 		public MockClient (string name, int id) {
 			Name = name;
 			Id = id;
-			OveridePingResult = true;
+			PingOverride = true;
 		}
 
 		#region IClient implementation
 
 		public IResult RunJob (IJob job) {
-			throw new NotImplementedException ();
+			if (null == RunJobOverride) {
+				throw new InvalidOperationException ("No override for RunJob()!");
+			}
+
+			return RunJobOverride.Invoke (job);
+		}
+
+		public Func<IJob, IResult> RunJobOverride {
+			get;
+			set;
 		}
 
 		public bool Ping () {
-			return OveridePingResult;
+			return PingOverride;
 		}
 
 
-		public bool OveridePingResult {
+		public bool PingOverride {
 			get;
 			set;
 		}
