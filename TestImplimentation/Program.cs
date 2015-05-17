@@ -26,16 +26,18 @@ namespace TestImplimentation {
 				System.Threading.Thread.Sleep (100);
 			}
 
-			IJob job = new TestJob ("test job", 1, null, null);
+			IJob job = new TestJob ("test job 1", 1, null, null);
 
 			var result = remoteServer.RubJob (job);
 			Console.WriteLine ("The result was {0}", result.Success);
 			Console.WriteLine (string.Join (Environment.NewLine, result.Result.Select (r => string.Format ("{0} : {1}", r.Key, r.Value))));
 
+			job = new TestJob ("test job 2", 2, null, null);
 			result = remoteServer.RubJob (job);
 			Console.WriteLine ("The result was {0}", result.Success);
 			Console.WriteLine (string.Join (Environment.NewLine, result.Result.Select (r => string.Format ("{0} : {1}", r.Key, r.Value))));
 
+			job = new TestJob ("test job 3", 3, null, null);
 			result = remoteServer.RubJob (job);
 			Console.WriteLine ("The result was {0}", result.Success);
 			Console.WriteLine (string.Join (Environment.NewLine, result.Result.Select (r => string.Format ("{0} : {1}", r.Key, r.Value))));

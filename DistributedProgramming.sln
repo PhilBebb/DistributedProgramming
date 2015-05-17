@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleImplementations", "Si
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestRemoteClientImplimentation", "TestRemoteClientImplimentation\TestRemoteClientImplimentation.csproj", "{2BAD0A34-8FE3-4C62-AEDC-18FF26B1AF51}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{2FEA9A93-B737-4E3B-A7A8-A46B94A5138D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{2BAD0A34-8FE3-4C62-AEDC-18FF26B1AF51}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2BAD0A34-8FE3-4C62-AEDC-18FF26B1AF51}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2BAD0A34-8FE3-4C62-AEDC-18FF26B1AF51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FEA9A93-B737-4E3B-A7A8-A46B94A5138D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FEA9A93-B737-4E3B-A7A8-A46B94A5138D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FEA9A93-B737-4E3B-A7A8-A46B94A5138D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FEA9A93-B737-4E3B-A7A8-A46B94A5138D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{381B49B2-7CAF-42F6-BAB1-5F653E66E72D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{381B49B2-7CAF-42F6-BAB1-5F653E66E72D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{381B49B2-7CAF-42F6-BAB1-5F653E66E72D}.Release|Any CPU.ActiveCfg = Release|Any CPU

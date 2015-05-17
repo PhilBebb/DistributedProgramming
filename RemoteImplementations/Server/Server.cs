@@ -42,6 +42,16 @@ namespace RemoteImplementations {
 			//}
 		}
 
+		public void Stop () {
+			_listener.Stop ();
+			try {
+				_listener.Server.Dispose ();
+			} catch (Exception ex) {
+				Log (ex.Message);
+				throw ex;
+			}
+		}
+
 		private void HandleConnection (TcpClient tcpClient) {			
 			string clientInfo = tcpClient.Client.RemoteEndPoint.ToString ();
 			Log (string.Format ("Got connection request from {0}", clientInfo));
@@ -92,7 +102,7 @@ namespace RemoteImplementations {
 		}
 
 		public bool IsClientConnected (IClient client) {
-			throw new NotImplementedException ();
+			return client.Ping ();
 		}
 
 		//		public Task<bool> IsClientConnectedAsync (IClient client)
