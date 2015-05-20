@@ -159,13 +159,52 @@ namespace UnitTests {
 				Assert.AreEqual (simpleJobParams [key], result.ClientResults [simpleJobClient].Result [key], "The key {0} was not found in the dictionary", key);
 			}
 
+			KillServer (server);
+		}
+
+		[Test]
+		public void AllClientsRunJob () {
+			var server = CreateServer ();
+
+			var clientsToRunResults = new Dictionary<int, bool> ();
+
+			var simpleJobParams = new Dictionary<string,string> {
+				{ "param1", "val1" }, { "param2", "val2" }, { "param3", "val3" }, { "param4", "val4" }
+			};
+
+			for (int i = 0; i < 10; i++) {
+				var client = new MockClient (i.ToString (), i);
+				//add to collection, set has rtun to false
+				clientsToRunResults.Add (client.Id, true);
+
+				client.RunJobOverride = (IJob job) => {
+					//now it's run, set to true
+					clientsToRunResults [client.Id] = true;
+					return new SimpleImplementations.SimpleResult (true, simpleJobParams, job);
+				};
+				server.AddClient (client);
+			}
+
+			IServerResult result = server.RubJob (new MockJob ());
+
+			foreach (var kvp in clientsToRunResults) {
+				Assert.IsTrue (kvp.Value, "The client {0} did not run as expected");
+			}
+			Assert.IsTrue (result.Success, "A client did not report a success");
+
+			KillServer (server);
+		}
+
+		//mix of success and fails
+		[Test]
+		public void ServerCreatesTest () {
+			var server = CreateServer ();
 			//test logic goes here!
 			KillServer (server);
 		}
 
+
 		//other tests to add
-		//multiple clients all run
-		//mix of success and fails
 		//clients throwing an error does not bork the method
 		//a lot more!
 	}
