@@ -15,17 +15,17 @@ namespace Helpers.Internal {
 
 		#region ICapability implementation
 
-		public string Name {
+		public override string Name {
 			get;
 			set;
 		}
 
-		public bool HasCapability {
+		public override bool HasCapability {
 			get;
 			set;
 		}
 
-		public string CapabilityValue {
+		public override string CapabilityValue {
 			get;
 			set;
 		}

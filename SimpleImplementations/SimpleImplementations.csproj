@@ -46,5 +46,9 @@
       <Project>{501046D8-49EC-42B0-93A4-DE87480A5B54}</Project>
       <Name>Interfaces</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Helpers\Helpers.csproj">
+      <Project>{3C6FF811-7E50-4EEC-BEDF-2CEBDC8E9B37}</Project>
+      <Name>Helpers</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

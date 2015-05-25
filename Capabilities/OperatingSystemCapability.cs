@@ -1,25 +1,35 @@
 ﻿using System;
 using Interfaces.Shared.Capabilities;
 
-namespace Capabilities
-{
-	public class OperatingSystemCapability : ICapability
-	{
-		public string Name {
+namespace Capabilities {
+	public class OperatingSystemCapability : ICapability {
+		public override string Name {
 			get {
 				return "Operating System";
 			}
-		}
-
-		public bool HasCapability {
-			get {
-				return true;
+			set {
+				//compiler complains if it doesn't exist
+				throw new NotSupportedException ();
 			}
 		}
 
-		public string CapabilityValue {
+		public override  bool HasCapability {
+			get {
+				return true;
+			}
+			set {
+				//compiler complains if it doesn't exist
+				throw new NotSupportedException ();
+			}
+		}
+
+		public override  string CapabilityValue {
 			get {
 				return Enum.GetName (typeof(PlatformID), Environment.OSVersion.Platform);
+			}
+			set {
+				//compiler complains if it doesn't exist
+				throw new NotSupportedException ();
 			}
 		}
 	}

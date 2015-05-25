@@ -121,24 +121,48 @@ namespace RemoteImplementations {
 			//start the timer, run the tasks, wait till time is done
 			var clientExecutionTime = new Stopwatch ();
 			clientExecutionTime.Start ();
+
 			foreach (var client in clientRunTasks.Values) {
 				client.Start ();
 			}
 			
-			Task.WaitAll (clientRunTasks.Values.ToArray ());
+			try {
+				Task.WaitAll (clientRunTasks.Values.ToArray ());
+			} catch (AggregateException ex) {
+				foreach (var e in ex.InnerExceptions) {
+					//?
+				}
+			}
+
 			clientExecutionTime.Stop (); //stop the time now it's done
 			
 			TimeSpan timeTaken = clientExecutionTime.Elapsed;
 			
 			IDictionary<IClient, IResult> clientResults = new Dictionary<IClient, IResult> ();
 			foreach (var client in clientRunTasks.Keys) {
-				clientResults.Add (client, clientRunTasks [client].Result);	
+				
+				try {
+					clientResults.Add (client, clientRunTasks [client].Result);	
+				} catch (AggregateException ex) {
+
+					var resultsDictionary = new Dictionary<string, string> () {
+						{ "Error", ex.Message }
+					};
+
+					foreach (Exception e in ex.InnerExceptions) {
+						resultsDictionary.Add (e.Message, e.StackTrace);
+					}
+
+					clientResults.Add (client, new SimpleImplementations.SimpleResult (
+						false,
+						resultsDictionary
+						, job));	
+				}
 			}
 			
 			IServerResult result = new SimpleImplementations.SimpleServerResult (
 				                       timeTaken,
 				                       clientResults,
-				                       clientResults.Values.Any (r => r.Success),
 				                       job);
 							
 			return result;

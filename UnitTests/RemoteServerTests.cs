@@ -147,7 +147,7 @@ namespace UnitTests {
 			IServerResult result = server.RubJob (new MockJob ());
 			Assert.IsNotNull (result, "Server result was null");
 
-			//check the mothod actually ran
+			//check the method actually ran
 			Assert.IsTrue (simpleJobCalled, "The \"called\" variable was not set, so the client run job method was not called");
 
 			//check results back
@@ -195,17 +195,84 @@ namespace UnitTests {
 			KillServer (server);
 		}
 
-		//mix of success and fails
-		[Test]
-		public void ServerCreatesTest () {
+		[Test] //clients throwing an error does not bork the method
+		public void ErorringClientdoesNotKillServerTest () {
 			var server = CreateServer ();
-			//test logic goes here!
+			var simpleJobParams = new Dictionary<string,string> {
+				{ "param1", "val1" }, { "param2", "val2" }, { "param3", "val3" }, { "param4", "val4" }
+			};
+
+			MockClient successfullClient = new MockClient { 
+				RunJobOverride = (IJob job) => {
+					return new SimpleImplementations.SimpleResult (true, simpleJobParams, job);
+				}
+			};
+
+			MockClient failingClient = new MockClient { 
+				RunJobOverride = (IJob job) => {
+					throw new InvalidOperationException ("TestError");
+				}
+			};
+
+			server.AddClient (successfullClient);
+			server.AddClient (failingClient);
+
+			IServerResult result = server.RubJob (new MockJob ());
+			Assert.IsNotNull (result, "Server result was null");
+
+			//check the method actually ran
+
+			//check results back
+			Assert.IsTrue (result.ClientResults.ContainsKey (successfullClient), "ClientResults does not contain successfullClient");
+			Assert.IsTrue (result.ClientResults [successfullClient].Success, "successfullClient result was not true");
+
+			Assert.IsTrue (result.ClientResults.ContainsKey (failingClient), "ClientResults does not contain failingClient");
+			Assert.IsFalse (result.ClientResults [failingClient].Success, "failingClient result was true");
+
+			KillServer (server);
+		}
+
+		//clients are run on diffirent threads
+		[Test] //clients throwing an error does not bork the method
+		public void JobsAreRunInParalellTest () {
+			var server = CreateServer ();
+			var simpleJobParams = new Dictionary<string,string> {
+				{ "param1", "val1" }, { "param2", "val2" }, { "param3", "val3" }, { "param4", "val4" }
+			};
+
+			TimeSpan shortTimespan = TimeSpan.FromMilliseconds (300);//needs to be long enough for tests to actuall run
+			TimeSpan longTimespan = TimeSpan.FromMilliseconds (shortTimespan.Milliseconds * 3);
+
+			MockClient shortWaitClient = new MockClient { 
+				RunJobOverride = (IJob job) => {
+					System.Threading.Thread.Sleep (shortTimespan);
+					return new SimpleImplementations.SimpleResult (true, simpleJobParams, job);
+				}
+			};
+
+			MockClient longWaitClient = new MockClient { 
+				RunJobOverride = (IJob job) => {
+					System.Threading.Thread.Sleep (longTimespan);
+					return new SimpleImplementations.SimpleResult (true, simpleJobParams, job);
+				}
+			};
+
+			server.AddClient (shortWaitClient);
+			server.AddClient (longWaitClient);
+
+			var sw = System.Diagnostics.Stopwatch.StartNew ();
+			server.RubJob (new MockJob ());
+			sw.Stop ();
+
+			Assert.IsTrue (sw.Elapsed < (shortTimespan + longTimespan), "Server did not run tests in parallel");
+			Assert.IsTrue (sw.Elapsed > shortTimespan, "Server time to run tests was shorter than expected");
+
 			KillServer (server);
 		}
 
 
+
 		//other tests to add
-		//clients throwing an error does not bork the method
 		//a lot more!
 	}
 }

@@ -9,12 +9,9 @@ namespace SimpleImplementations {
 		public SimpleServerResult (
 			TimeSpan timeTaken, 
 			IDictionary<IClient, IResult> clientResults,
-			bool success,
-			IJob request
-		) {
+			IJob request) {
 			TimeTaken = timeTaken;
 			ClientResults = clientResults;
-			Success = success;
 			Request = request;
 		}
 
@@ -29,8 +26,7 @@ namespace SimpleImplementations {
 		}
 
 		public bool Success {
-			get;
-			private set;
+			get { return ClientResults.Any (r => r.Value.Success); }
 		}
 
 		public IDictionary<string, string> Result {

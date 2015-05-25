@@ -8,45 +8,36 @@ using Interfaces;
 using System.Diagnostics;
 using System.Collections;
 
-namespace TestImplimentation
-{
-	public class TestServer : IServer
-	{
-		public Task<IEnumerable<IClient>> GetConnectedClientsAsync ()
-		{
+namespace TestImplimentation {
+	public class TestServer : IServer {
+		public Task<IEnumerable<IClient>> GetConnectedClientsAsync () {
 			return Task.Factory.StartNew (() => GetConnectedClients ());
 		}
 
-		public Task<bool> IsClientConnectedAsync (IClient client)
-		{
+		public Task<bool> IsClientConnectedAsync (IClient client) {
 			return Task.Factory.StartNew (() => IsClientConnected (client));
 		}
 
-		public Task<IServerResult> RubJobAsync (IJob job)
-		{
+		public Task<IServerResult> RubJobAsync (IJob job) {
 			return Task.Factory.StartNew (() => RubJob (job));
 		}
 
-		public Task<bool> PingClientAsync (IClient client)
-		{
+		public Task<bool> PingClientAsync (IClient client) {
 			return Task.Factory.StartNew (() => PingClient (client));
 		}
 
-		public bool PingClient (IClient client)
-		{
+		public bool PingClient (IClient client) {
 			return client.Ping ();
 		}
 
 		private IList<IClient> _connectedClients = new List<IClient> ();
 		private readonly object _lock = new object ();
 
-		public IEnumerable<IClient> GetConnectedClients ()
-		{
+		public IEnumerable<IClient> GetConnectedClients () {
 			return _connectedClients;
 		}
 
-		public bool AddClient (IClient client)
-		{
+		public bool AddClient (IClient client) {
 			lock (_lock) {
 				if (!_connectedClients.Contains (client)) {
 					_connectedClients.Add (client);
@@ -56,8 +47,7 @@ namespace TestImplimentation
 			return false;
 		}
 
-		public bool RemoveClient (IClient client)
-		{
+		public bool RemoveClient (IClient client) {
 			lock (_lock) {
 				if (_connectedClients.Contains (client)) {
 					_connectedClients.Remove (client);
@@ -67,16 +57,14 @@ namespace TestImplimentation
 			return false;
 		}
 
-		public bool IsClientConnected (IClient client)
-		{
+		public bool IsClientConnected (IClient client) {
 			if (!_connectedClients.Contains (client))
 				return false;
 
 			return client.Ping ();
 		}
 
-		public IServerResult RubJob (IJob job)
-		{
+		public IServerResult RubJob (IJob job) {
 			//get best client(s)
 			IEnumerable<IClient> clients = ClientSelectionMethod.GetBestClients (job, this);
 
@@ -105,7 +93,6 @@ namespace TestImplimentation
 			IServerResult result = new SimpleImplementations.SimpleServerResult (
 				                       timeTaken,
 				                       clientResults,
-				                       clientResults.Values.Any (r => r.Success),
 				                       job);
 			return result;
 		}
@@ -121,8 +108,7 @@ namespace TestImplimentation
 			}
 		}
 
-		public TestServer ()
-		{
+		public TestServer () {
 		}
 	}
 }

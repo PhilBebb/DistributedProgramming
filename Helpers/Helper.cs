@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Linq;
 using Interfaces.Shared;
 using Helpers.Internal;
+using System.Collections.Generic;
+using Interfaces.Shared.Capabilities;
 
 namespace Helpers {
 	public static class Helper {
@@ -35,6 +38,12 @@ namespace Helpers {
 				new CapabilityConverter ()
 			);
 		
+		}
+
+		public static IList<IClient> GetPossibleClients (IEnumerable<IClient> clients, IEnumerable<ICapability> capabilities) {
+			return clients.Where (c => {
+				return capabilities.All (cap => c.Capabilities.Contains (cap));
+			}).ToList ();
 		}
 	}
 }

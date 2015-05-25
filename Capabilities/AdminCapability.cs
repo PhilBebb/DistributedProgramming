@@ -3,20 +3,22 @@ using Interfaces.Shared.Capabilities;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
 
-namespace Capabilities
-{
-	public class AdminCapability : ICapability
-	{
+namespace Capabilities {
+	public class AdminCapability : ICapability {
 		//[DllImport ("libc")]
 		//public static extern uint getuid ();
 
-		public string Name {
+		public override string Name {
 			get {
 				return "Admin";
 			}
+			set {
+				//compiler complains if it doesn't exist
+				throw new NotSupportedException ();
+			}
 		}
 
-		public bool HasCapability {
+		public override bool HasCapability {
 			get {
 				bool isAdmin = false;
 				try {
@@ -31,13 +33,21 @@ namespace Capabilities
 				}
 				return isAdmin;
 			}
+			set {
+				//compiler complains if it doesn't exist
+				throw new NotSupportedException ();
+			}
 
 			//return getuid () == 0;
 		}
 
-		public string CapabilityValue {
+		public override string CapabilityValue {
 			get {
 				return HasCapability.ToString ();
+			}
+			set {
+				//compiler complains if it doesn't exist
+				throw new NotSupportedException ();
 			}
 		}
 

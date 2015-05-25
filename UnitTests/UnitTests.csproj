@@ -37,6 +37,9 @@
     <Compile Include="Mocks\MockClient.cs" />
     <Compile Include="RemoteServerTests.cs" />
     <Compile Include="Mocks\MockJob.cs" />
+    <Compile Include="ResultTests\SimpleServerResultsTest.cs" />
+    <Compile Include="HelperTests\HelperTests.cs" />
+    <Compile Include="Mocks\MockCapability.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -66,5 +69,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Mocks\" />
+    <Folder Include="ResultTests\" />
+    <Folder Include="HelperTests\" />
   </ItemGroup>
 </Project>

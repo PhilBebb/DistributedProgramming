@@ -2,17 +2,19 @@
 using Interfaces.Shared.Capabilities;
 using System.Diagnostics;
 
-namespace Capabilities
-{
-	public class ScreenCapability : ICapability
-	{
-		public string Name {
+namespace Capabilities {
+	public class ScreenCapability : ICapability {
+		public override string Name {
 			get {
 				return "Screen";
 			}
+			set {
+				//compiler complains if it doesn't exist
+				throw new NotSupportedException ();
+			}
 		}
 
-		public bool HasCapability {
+		public override bool HasCapability {
 			get {
 				if (Helpers.Helper.IsWindows) {
 					return (Process.GetCurrentProcess ().MainWindowHandle != IntPtr.Zero);
@@ -20,11 +22,19 @@ namespace Capabilities
 				//todo: work out how to actually figure this out on *nix
 				return false; 
 			}
+			set {
+				//compiler complains if it doesn't exist
+				throw new NotSupportedException ();
+			}
 		}
 
-		public string CapabilityValue {
+		public override string CapabilityValue {
 			get {
 				return HasCapability.ToString ();
+			}
+			set {
+				//compiler complains if it doesn't exist
+				throw new NotSupportedException ();
 			}
 		}
 

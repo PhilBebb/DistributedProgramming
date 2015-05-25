@@ -68,9 +68,8 @@ namespace UnitTests {
 		}
 
 		public System.Collections.Generic.IEnumerable<Interfaces.Shared.Capabilities.ICapability> Capabilities {
-			get {
-				throw new NotImplementedException ();
-			}
+			get;
+			set;
 		}
 
 		#endregion
