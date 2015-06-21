@@ -9,11 +9,13 @@ using System.Collections.Generic;
 namespace UnitTests {
 	[TestFixture()]
 	public class RemoteServerTests {
-		static RemoteImplementations.Server CreateServer() {
-			return new Server(1000, new SimpleImplementations.SimpleClientSelection());
+        internal const short ServerPort = 1000;
+    
+		internal static RemoteImplementations.Server CreateServer() {
+            return new Server(ServerPort, new SimpleImplementations.SimpleClientSelection());
 		}
 
-		static void KillServer(RemoteImplementations.Server server) {
+		internal static void KillServer(RemoteImplementations.Server server) {
 			server.Stop();
 		}
 
