@@ -63,5 +63,14 @@ namespace UnitTests {
             Assert.AreEqual(2, proccessedCount); //should be 2
 
         }
+
+        [Test]
+        public void StartThreadedCreatsAThreadAndDoesNotBlock() {
+            Assert.IsFalse(client.IsRunningThreadded(), "Client is running in threading mode before it's been started");
+            client.StartThreaded(IPAddress.Loopback, RemoteServerTests.ServerPort);
+            Assert.IsTrue(client.IsRunningThreadded(), "Client is not running in threading mode after been told to start");
+            client.Stop();
+            Assert.IsFalse(client.IsRunningThreadded(), "Client is running in threading mode after being told to stop");
+        }
     }
 }

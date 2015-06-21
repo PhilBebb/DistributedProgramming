@@ -76,6 +76,17 @@ namespace RemoteImplementations {
 
         }
 
+        public bool IsRunningThreadded() {
+            if (_receiverThread != null) {
+                lock (this) {
+                    if (_receiverThread != null) {
+                        return _receiverThread.ThreadState == System.Threading.ThreadState.Running;
+                    }
+                }
+            }
+            return false;
+        }
+
         private async void ListenForServer() {
             while (true) {
                 Console.WriteLine("Waiting for job");
