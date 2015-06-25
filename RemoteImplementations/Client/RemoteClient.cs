@@ -9,121 +9,121 @@ using SimpleImplementations;
 
 namespace RemoteImplementations {
 
-	public delegate void RequestReceivedEventHandle(object sender, RequestReceivedEventArgs e);
-	public delegate void RequestProcessedEventHandle(object sender, RequestProcessedEventArgs e);
+    public delegate void RequestReceivedEventHandle(object sender, RequestReceivedEventArgs e);
+    public delegate void RequestProcessedEventHandle(object sender, RequestProcessedEventArgs e);
 
-	public class RemoteClient {
-		private TcpClient _client = null;
-		private Thread _receiverThread = null;
+    public class RemoteClient {
+        private TcpClient _client = null;
+        private Thread _receiverThread = null;
 
-		private void StartListenerThread() {
-			if (_receiverThread == null) {
-				lock (this) {
-					if (_receiverThread == null) {
-						_receiverThread = new Thread(new ThreadStart(ListenForServer));
-						_receiverThread.Start();
-					}
-				}
-			}
-		}
+        private void StartListenerThread() {
+            if(_receiverThread == null) {
+                lock(this) {
+                    if(_receiverThread == null) {
+                        _receiverThread = new Thread(new ThreadStart(ListenForServer));
+                        _receiverThread.Start();
+                    }
+                }
+            }
+        }
 
-		private void StopListenerThread() {
-			if (_receiverThread != null) {
-				lock (this) {
-					if (_receiverThread != null) {
-						_receiverThread.Abort();
-						_receiverThread = null;
-					}
-				}
-			}
-		}
+        private void StopListenerThread() {
+            if(_receiverThread != null) {
+                lock(this) {
+                    if(_receiverThread != null) {
+                        _receiverThread.Abort();
+                        _receiverThread = null;
+                    }
+                }
+            }
+        }
 
-		public RemoteClient() {
-			_client = new TcpClient();
-		}
+        public RemoteClient() {
+            _client = new TcpClient();
+        }
 
-		public void Start(IPAddress address, int port) {
-			Console.WriteLine("Starting");
-			_client.ConnectAsync(address, port);
-			Console.WriteLine("Connected");
+        public void Start(IPAddress address, int port) {
+            Console.WriteLine("Starting");
+            _client.Connect(address, port);
+            Console.WriteLine("Connected");
 
-			SendHelloAsync();
+            SendHelloAsync();
 
-			ListenForServer();
-		}
+            ListenForServer();
+        }
 
-		public void StartThreaded(IPAddress address, int port) {
-			Console.WriteLine("Starting");
-			_client.ConnectAsync(address, port);
-			Console.WriteLine("Connected");
+        public void StartThreaded(IPAddress address, int port) {
+            Console.WriteLine("Starting");
+            _client.ConnectAsync(address, port);
+            Console.WriteLine("Connected");
 
-			SendHelloAsync();
+            SendHelloAsync();
 
-			StopListenerThread();
-			StartListenerThread();
+            StopListenerThread();
+            StartListenerThread();
 
-		}
+        }
 
-		public void Stop() {
-			try {
-				_client.Close();
-			}
-			catch (Exception ex) {
-				throw ex;
-			}
+        public void Stop() {
+            try {
+                _client.Close();
+            } catch(Exception ex) {
+                throw ex;
+            }
 
-			StopListenerThread();
+            StopListenerThread();
 
-		}
+        }
 
-		public bool IsRunningThreadded() {
-			if (_receiverThread != null) {
-				lock (this) {
-					if (_receiverThread != null) {
-						return _receiverThread.ThreadState == System.Threading.ThreadState.Running;
-					}
-				}
-			}
-			return false;
-		}
+        public bool IsRunningThreadded() {
+            if(_receiverThread != null) {
+                lock(this) {
+                    if(_receiverThread != null) {
+                        return _receiverThread.ThreadState == System.Threading.ThreadState.Running;
+                    }
+                }
+            }
+            return false;
+        }
 
-		private async void ListenForServer() {
-			while (true) {
-				Console.WriteLine("Waiting for job");
-				var job = await InternalHelper.ReadJobAsJsonAsync(_client);
-				if (RequestReceived != null) {
-					RequestReceived(this, new RequestReceivedEventArgs { Request = job });
-				}
-				Console.WriteLine("job get!");
+        private async void ListenForServer() {
+            while (true) {
+                Console.WriteLine("Waiting for job");
+                var job = await InternalHelper.ReadJobAsJsonAsync(_client);
+                if(RequestReceived != null) {
+                    RequestReceived(this, new RequestReceivedEventArgs { Request = job });
+                }
+                Console.WriteLine("job get!");
 
-				IResult result = new SimpleResult(
-														 true,
-														 new Dictionary<string, string> { { "p1", "a" }, { "p2", "b" } },
-														 job
-												 );
-				Console.WriteLine("Sending result");
-				InternalHelper.SendJson(Helpers.Helper.ResultToJson(result), _client);
-				if (RequestProcessed != null) {
-					RequestProcessed(this, new RequestProcessedEventArgs { Result = result });
-				}
-				Console.WriteLine("Result sent");
-			}
-		}
+                IResult result = new SimpleResult(
+                                     true,
+                                     new Dictionary<string, string> { { "p1", "a" }, { "p2", "b" } },
+                                     job
+                                 );
 
-		private async Task<bool> SendHelloAsync() {
-			return true;
-		}
+                Console.WriteLine("Sending result");
+                InternalHelper.SendJson(Helpers.Helper.ResultToJson(result), _client);
+                if(RequestProcessed != null) {
+                    RequestProcessed(this, new RequestProcessedEventArgs { Result = result });
+                }
+                Console.WriteLine("Result sent");
+            }
+        }
 
-		public event RequestReceivedEventHandle RequestReceived;
-		public event RequestProcessedEventHandle RequestProcessed;
-	}
+        private async Task<bool> SendHelloAsync() {
+            return true;
+        }
 
-	public class RequestReceivedEventArgs : EventArgs {
-		public IJob Request { get; set; }
-	}
+        public event RequestReceivedEventHandle RequestReceived;
+        public event RequestProcessedEventHandle RequestProcessed;
+    }
 
-	public class RequestProcessedEventArgs : EventArgs {
-		public IResult Result { get; set; }
-	}
+    public class RequestReceivedEventArgs : EventArgs {
+        public IJob Request { get; set; }
+    }
+
+    public class RequestProcessedEventArgs : EventArgs {
+        public IResult Result { get; set; }
+    }
 
 }

@@ -21,7 +21,7 @@ namespace UnitTests {
         private void client_RequestProcessed(object sender, RemoteImplementations.RequestProcessedEventArgs e) {
             proccessedCount++;
         }
-        
+
         private void client_RequestReceived(object sender, RemoteImplementations.RequestReceivedEventArgs e) {
             receivedCount++;
         }
@@ -51,7 +51,7 @@ namespace UnitTests {
 
             //wait for a request
             client.StartThreaded(IPAddress.Loopback, RemoteServerTests.ServerPort);
-						System.Threading.Thread.Sleep(250); //wait for connect
+            System.Threading.Thread.Sleep(250); //wait for connect
             Assert.AreEqual(1, server.GetConnectedClients().Count());
 
             IJob job = new MockJob();
