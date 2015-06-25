@@ -5,30 +5,41 @@ using Interfaces.Server;
 using RemoteImplementations;
 using Interfaces.Shared;
 using System.Collections.Generic;
+using System.Net;
 
 namespace UnitTests {
 	[TestFixture()]
 	public class RemoteServerTests {
-        internal const short ServerPort = 1000;
-    
+		internal const int ServerPort = 34554;
+
+		private RemoteImplementations.Server server = null;
+
 		internal static RemoteImplementations.Server CreateServer() {
-            return new Server(ServerPort, new SimpleImplementations.SimpleClientSelection());
+			return new Server(ServerPort, new SimpleImplementations.SimpleClientSelection());
 		}
 
 		internal static void KillServer(RemoteImplementations.Server server) {
 			server.Stop();
 		}
 
+		[SetUp]
+		public void Setup() {
+			server = CreateServer();
+		}
+
+		[TearDown]
+		public void TearDown() {
+			KillServer(server);
+		}
+
 		[Test]
 		public void ServerCreatesTest() {
-			var server = CreateServer();
 			//test logic goes here!
 			KillServer(server);
 		}
 
 		[Test]
 		public void AddClientTest() {
-			var server = CreateServer();
 
 			//starts with no clients
 
@@ -67,7 +78,6 @@ namespace UnitTests {
 
 		[Test]
 		public void RemoveClientTest() {
-			var server = CreateServer();
 
 			//add clients
 			int expectedClientCount = 0;
@@ -92,7 +102,6 @@ namespace UnitTests {
 
 		[Test]
 		public void ConnectionAndPingTests() {
-			var server = CreateServer();
 
 			MockClient pingTrue = new MockClient("pingTrue");
 
@@ -131,7 +140,6 @@ namespace UnitTests {
 
 		[Test]
 		public void RunJobCallsClientsMethod() {
-			var server = CreateServer();
 
 			bool simpleJobCalled = false;
 			var simpleJobParams = new Dictionary<string, string> {
@@ -166,7 +174,6 @@ namespace UnitTests {
 
 		[Test]
 		public void AllClientsRunJob() {
-			var server = CreateServer();
 
 			var clientsToRunResults = new Dictionary<int, bool>();
 
@@ -237,7 +244,6 @@ namespace UnitTests {
 		//clients are run on diffirent threads
 		[Test] //clients throwing an error does not bork the method
 		public void JobsAreRunInParalellTest() {
-			var server = CreateServer();
 			var simpleJobParams = new Dictionary<string, string> {
 				{ "param1", "val1" }, { "param2", "val2" }, { "param3", "val3" }, { "param4", "val4" }
 			};
@@ -274,14 +280,45 @@ namespace UnitTests {
 
 		[Test]
 		public void StartThreadedCreatsAThreadAndDoesNotBlock() {
-			var server = CreateServer();
-            Assert.IsFalse(server.IsRunningThreadded(), "Server is running in threading mode before it's been started");
-            server.StartThreaded();
-            Assert.IsTrue(server.IsRunningThreadded(), "Server is not running in threading mode after been told to start");
+			Assert.IsFalse(server.IsRunningThreadded(), "Server is running in threading mode before it's been started");
+			server.StartThreaded();
+			Assert.IsTrue(server.IsRunningThreadded(), "Server is not running in threading mode after been told to start");
 			server.Stop();
-            Assert.IsFalse(server.IsRunningThreadded(), "Server is running in threading mode after being told to stop");
+			Assert.IsFalse(server.IsRunningThreadded(), "Server is running in threading mode after being told to stop");
 		}
 
+		[Test]
+		public void ServerCanHandleMultipleClientsWhileThreading() {
+			server.StartThreaded();
+
+			var client1 = new RemoteClient();
+			client1.StartThreaded(IPAddress.Loopback, ServerPort);
+
+			var client2 = new RemoteClient();
+			client2.StartThreaded(IPAddress.Loopback, ServerPort);
+
+			bool client1Run = false;
+			bool client2Run = false;
+
+			client1.RequestProcessed += (sender, args) => {
+				client1Run = true;
+			};
+
+			client2.RequestProcessed += (sender, args) => {
+				client2Run = true;
+			};
+			
+			System.Threading.Thread.Sleep(250);
+
+			Assert.AreEqual(2, server.GetConnectedClients().Count(), "Both servers have not connected");
+
+			var result = server.RubJob(new MockJob());
+			Assert.IsTrue(result.Success, "client did not mark job as success");
+			Assert.IsTrue(client1Run, "client1 did not fire processed event");
+			Assert.IsTrue(client2Run, "client2 did not fire processed event");
+
+			KillServer(server);
+		}
 		//other tests to add
 		//a lot more!
 	}

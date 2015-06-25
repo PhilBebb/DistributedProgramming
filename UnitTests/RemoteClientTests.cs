@@ -51,7 +51,7 @@ namespace UnitTests {
 
             //wait for a request
             client.StartThreaded(IPAddress.Loopback, RemoteServerTests.ServerPort);
-
+						System.Threading.Thread.Sleep(250); //wait for connect
             Assert.AreEqual(1, server.GetConnectedClients().Count());
 
             IJob job = new MockJob();
