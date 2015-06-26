@@ -20,6 +20,7 @@ namespace RemoteImplementations {
 
 		private object _lock = new object ();
 		private List<IClient> _clients = new List<IClient> ();
+		private Thread _receiverThread = null;
 
 		public Server (int port, IClientSelection clientSelection) {
 			_listener = new TcpListener (new IPEndPoint (IPAddress.Any, port));
@@ -30,16 +31,68 @@ namespace RemoteImplementations {
 			Log ("Starting...");
 			_listener.Start ();
 			Log ("Started");
+			ListenForClient ();
+		}
 
-			//while (true) {
-			try {
-				var tcpClient = _listener.AcceptTcpClient ();
-				Task.Factory.StartNew (() => HandleConnection (tcpClient));
+		public void StartThreaded () {
+			Log ("Starting...");
+			_listener.Start ();
+			Log ("Started");
 
-			} catch (Exception ex) {
-				Log (string.Format ("Exception : {0}", ex.Message));
+			//kill it to make sure
+			StopListenerThread ();
+
+			//and now safely create it again
+			StartListenerThread ();
+		}
+
+		private void StartListenerThread () {
+			if (_receiverThread == null) {
+				lock (this) {
+					if (_receiverThread == null) {
+						_receiverThread = new Thread (new ParameterizedThreadStart (ListenForClient));
+						_receiverThread.Start (true);
+					}
+				}
 			}
-			//}
+		}
+
+		private void StopListenerThread () {
+			if (_receiverThread != null) {
+				lock (this) {
+					if (_receiverThread != null) {
+						_receiverThread.Abort ();
+						_receiverThread = null;
+					}
+				}
+			}
+		}
+
+		public bool IsRunningThreadded () {
+			if (_receiverThread != null) {
+				lock (this) {
+					if (_receiverThread != null) {
+						return _receiverThread.ThreadState == System.Threading.ThreadState.Running;
+					}
+				}
+			}
+			return false;
+		}
+
+		private void ListenForClient (object o) {
+			ListenForClient ((bool)o);
+		}
+
+		private void ListenForClient (bool loopForever = false) {
+			do {
+				try {
+					var tcpClient = _listener.AcceptTcpClient ();
+					Task.Factory.StartNew (() => HandleConnection (tcpClient));
+
+				} catch (Exception ex) {
+					Log (string.Format ("Exception : {0}", ex.Message));
+				}
+			} while (loopForever);
 		}
 
 		public void Stop () {
@@ -50,9 +103,12 @@ namespace RemoteImplementations {
 				Log (ex.Message);
 				throw ex;
 			}
+
+			StopListenerThread ();
+
 		}
 
-		private void HandleConnection (TcpClient tcpClient) {			
+		private void HandleConnection (TcpClient tcpClient) {
 			string clientInfo = tcpClient.Client.RemoteEndPoint.ToString ();
 			Log (string.Format ("Got connection request from {0}", clientInfo));
 
@@ -63,9 +119,7 @@ namespace RemoteImplementations {
 			AddClient (remote);
 		}
 
-		private void Log (
-			string message,
-			[CallerMemberName]string callername = "") {
+		private void Log (string message, [CallerMemberName] string callername = "") {
 			System.Console.WriteLine (
 				"[{0}] - Thread-{1}- {2}",
 				callername,
@@ -112,20 +166,19 @@ namespace RemoteImplementations {
 
 		public IServerResult RubJob (IJob job) {
 			IEnumerable<IClient> clients = ClientSelectionMethod.GetBestClients (job, this);
-			
+
 			//make tasks for all of them
 			IDictionary<IClient, Task<IResult>> clientRunTasks;
-			
-			clientRunTasks = clients.ToDictionary (c => c, c => new Task<IResult> (() => c.RunJob (job)));
-			
-			//start the timer, run the tasks, wait till time is done
-			var clientExecutionTime = new Stopwatch ();
-			clientExecutionTime.Start ();
 
-			foreach (var client in clientRunTasks.Values) {
+			clientRunTasks = clients.ToDictionary (c => c, c => new Task<IResult> (() => c.RunJob (job)));
+
+			//start the timer, run the tasks, wait till time is done
+			var clientExecutionTime = Stopwatch.StartNew ();
+
+			foreach (var client in clientRunTasks.Values.AsParallel ()) {
 				client.Start ();
 			}
-			
+
 			try {
 				Task.WaitAll (clientRunTasks.Values.ToArray ());
 			} catch (AggregateException ex) {
@@ -135,14 +188,14 @@ namespace RemoteImplementations {
 			}
 
 			clientExecutionTime.Stop (); //stop the time now it's done
-			
+
 			TimeSpan timeTaken = clientExecutionTime.Elapsed;
-			
+
 			IDictionary<IClient, IResult> clientResults = new Dictionary<IClient, IResult> ();
 			foreach (var client in clientRunTasks.Keys) {
-				
+
 				try {
-					clientResults.Add (client, clientRunTasks [client].Result);	
+					clientResults.Add (client, clientRunTasks [client].Result);
 				} catch (AggregateException ex) {
 
 					var resultsDictionary = new Dictionary<string, string> () {
@@ -156,15 +209,15 @@ namespace RemoteImplementations {
 					clientResults.Add (client, new SimpleImplementations.SimpleResult (
 						false,
 						resultsDictionary
-						, job));	
+                        , job));
 				}
 			}
-			
+
 			IServerResult result = new SimpleImplementations.SimpleServerResult (
 				                       timeTaken,
 				                       clientResults,
 				                       job);
-							
+
 			return result;
 		}
 

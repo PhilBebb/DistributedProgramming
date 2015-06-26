@@ -5,275 +5,336 @@ using Interfaces.Server;
 using RemoteImplementations;
 using Interfaces.Shared;
 using System.Collections.Generic;
+using System.Net;
 
 namespace UnitTests {
-	[TestFixture ()]
-	public class RemoteServerTests {
-		static RemoteImplementations.Server CreateServer () {
-			return new Server (1000, new SimpleImplementations.SimpleClientSelection ());
-		}
+    [TestFixture()]
+    public class RemoteServerTests {
+        internal const int ServerPort = 34554;
 
-		static void KillServer (RemoteImplementations.Server server) {
-			server.Stop ();
-		}
+        private RemoteImplementations.Server server = null;
 
-		[Test]
-		public void ServerCreatesTest () {
-			var server = CreateServer ();
-			//test logic goes here!
-			KillServer (server);
-		}
+        internal static RemoteImplementations.Server CreateServer() {
+            return new Server(ServerPort, new SimpleImplementations.SimpleClientSelection());
+        }
 
-		[Test]
-		public void AddClientTest () {
-			var server = CreateServer ();
+        internal static void KillServer(RemoteImplementations.Server server) {
+            server.Stop();
+        }
 
-			//starts with no clients
+        [SetUp]
+        public void Setup() {
+            server = CreateServer();
+        }
 
-			int expectedClientCount = 0;
-			int clientCount = server.GetConnectedClients ().Count ();
-			Assert.AreEqual (expectedClientCount, clientCount, "Expected {0} clinets after creating server, got {1}", expectedClientCount, clientCount);
+        [TearDown]
+        public void TearDown() {
+            KillServer(server);
+        }
 
-			//adding a client actually adds the client
+        [Test]
+        public void ServerCreatesTest() {
+            //test logic goes here!
+            KillServer(server);
+        }
 
-			IClient client1 = new MockClient ("client1", expectedClientCount);
-			Assert.True (server.AddClient (client1), "Failed to add the first client");
-			//should now have 1 client
-			expectedClientCount = 1;
+        [Test]
+        public void AddClientTest() {
 
-			//check again
-			clientCount = server.GetConnectedClients ().Count ();
-			Assert.AreEqual (expectedClientCount, clientCount, "Expected {0} clinets after adding clients, got {1}", expectedClientCount, clientCount);
+            //starts with no clients
 
-			//add again, expect a fail
-			Assert.False (server.AddClient (client1), "Add the first client again");
+            int expectedClientCount = 0;
+            int clientCount = server.GetConnectedClients().Count();
+            Assert.AreEqual(expectedClientCount, clientCount, "Expected {0} clinets after creating server, got {1}", expectedClientCount, clientCount);
 
-			//add one more
+            //adding a client actually adds the client
 
-			IClient client2 = new MockClient ("client2", expectedClientCount);
-			Assert.True (server.AddClient (client2), "Failed to add the second client");
-			//should now have 1 client
-			expectedClientCount = 2;
+            IClient client1 = new MockClient("client1", expectedClientCount);
+            Assert.True(server.AddClient(client1), "Failed to add the first client");
+            //should now have 1 client
+            expectedClientCount = 1;
 
-			//check again
-			clientCount = server.GetConnectedClients ().Count ();
-			Assert.AreEqual (expectedClientCount, clientCount, "Expected {0} clinets after adding clients, got {1}", expectedClientCount, clientCount);
+            //check again
+            clientCount = server.GetConnectedClients().Count();
+            Assert.AreEqual(expectedClientCount, clientCount, "Expected {0} clinets after adding clients, got {1}", expectedClientCount, clientCount);
 
-			//and we are done!
-			KillServer (server);
-		}
+            //add again, expect a fail
+            Assert.False(server.AddClient(client1), "Add the first client again");
 
-		[Test]
-		public void RemoveClientTest () {
-			var server = CreateServer ();
+            //add one more
 
-			//add clients
-			int expectedClientCount = 0;
-			IClient client1 = new MockClient ("client1", expectedClientCount);
-			Assert.True (server.AddClient (client1), "Failed to add the first client");
-			expectedClientCount++;
+            IClient client2 = new MockClient("client2", expectedClientCount);
+            Assert.True(server.AddClient(client2), "Failed to add the second client");
+            //should now have 1 client
+            expectedClientCount = 2;
 
-			IClient client2 = new MockClient ("client2", expectedClientCount);
-			Assert.True (server.AddClient (client2), "Failed to add the second client");
-			expectedClientCount++;
+            //check again
+            clientCount = server.GetConnectedClients().Count();
+            Assert.AreEqual(expectedClientCount, clientCount, "Expected {0} clinets after adding clients, got {1}", expectedClientCount, clientCount);
 
-			//check they are there
-			int clientCount = server.GetConnectedClients ().Count ();
-			Assert.AreEqual (expectedClientCount, clientCount, "Expected {0} clinets after adding clients, got {1}", expectedClientCount, clientCount);
+            //and we are done!
+            KillServer(server);
+        }
 
-			Assert.IsTrue (server.RemoveClient (client1), "Got false for removing existing client");
-			Assert.IsFalse (server.RemoveClient (client1), "Got true for removing non existing client");
-			Assert.IsTrue (server.RemoveClient (client2), "Got false for removing existing client");
+        [Test]
+        public void RemoveClientTest() {
 
-			KillServer (server);
-		}
+            //add clients
+            int expectedClientCount = 0;
+            IClient client1 = new MockClient("client1", expectedClientCount);
+            Assert.True(server.AddClient(client1), "Failed to add the first client");
+            expectedClientCount++;
 
-		[Test]
-		public void ConnectionAndPingTests () {
-			var server = CreateServer ();
+            IClient client2 = new MockClient("client2", expectedClientCount);
+            Assert.True(server.AddClient(client2), "Failed to add the second client");
+            expectedClientCount++;
 
-			MockClient pingTrue = new MockClient ("pingTrue");
+            //check they are there
+            int clientCount = server.GetConnectedClients().Count();
+            Assert.AreEqual(expectedClientCount, clientCount, "Expected {0} clinets after adding clients, got {1}", expectedClientCount, clientCount);
 
-			//create a client that will ping false
-			MockClient pingFalse = new MockClient ("pingFalse"){ PingOverride = false };
+            Assert.IsTrue(server.RemoveClient(client1), "Got false for removing existing client");
+            Assert.IsFalse(server.RemoveClient(client1), "Got true for removing non existing client");
+            Assert.IsTrue(server.RemoveClient(client2), "Got false for removing existing client");
 
-			//add clients
-			server.AddClient (pingTrue);
-			server.AddClient (pingFalse);
+            KillServer(server);
+        }
 
-			int expectedCount = 1;
-			var clients = server.GetConnectedClients ().ToList ();
-			int actualCount = clients.Count ();
+        [Test]
+        public void ConnectionAndPingTests() {
 
-			//check the GetConnectedClients method
-			Assert.AreEqual (expectedCount, actualCount, "Expected {0} clinets after adding clients, got {1} not checking ping on clients", expectedCount, actualCount);
-			Assert.IsTrue (clients.Contains (pingTrue), "pingTrue client not found in connected client list");
-			Assert.IsFalse (clients.Contains (pingFalse), "pingFalse client found in connected client list");
+            MockClient pingTrue = new MockClient("pingTrue");
 
-			//check IsClientConnected method
-			Assert.IsTrue (server.IsClientConnected (pingTrue), "pingTrue client not showing as connected");
-			Assert.IsTrue (server.PingClient (pingTrue), "pingTrue client not pinging as expected");
-			Assert.IsFalse (server.IsClientConnected (pingFalse), "pingTrue client not showing as connected");
-			Assert.IsFalse (server.PingClient (pingFalse), "pingFalse client not pinging as expected");
+            //create a client that will ping false
+            MockClient pingFalse = new MockClient("pingFalse") { PingOverride = false };
 
-			//set pingFalseToNowConnect
-			pingFalse.PingOverride = true;
-			expectedCount = 2;
-			clients = server.GetConnectedClients ().ToList ();
-			actualCount = clients.Count ();
-			Assert.AreEqual (expectedCount, actualCount, "Expected {0} clinets after adding clients, got {1} not checking ping on clients", expectedCount, actualCount);
-			Assert.IsTrue (clients.Contains (pingTrue), "pingTrue client not found in connected client list");
-			Assert.IsTrue (clients.Contains (pingFalse), "pingTrue client not found in connected client list");
-			KillServer (server);
-		}
+            //add clients
+            server.AddClient(pingTrue);
+            server.AddClient(pingFalse);
 
-		[Test]
-		public void RunJobCallsClientsMethod () {
-			var server = CreateServer ();
+            int expectedCount = 1;
+            var clients = server.GetConnectedClients().ToList();
+            int actualCount = clients.Count();
 
-			bool simpleJobCalled = false;
-			var simpleJobParams = new Dictionary<string,string> {
-				{ "param1", "val1" }, { "param2", "val2" }, { "param3", "val3" }, { "param4", "val4" }
-			};
+            //check the GetConnectedClients method
+            Assert.AreEqual(expectedCount, actualCount, "Expected {0} clinets after adding clients, got {1} not checking ping on clients", expectedCount, actualCount);
+            Assert.IsTrue(clients.Contains(pingTrue), "pingTrue client not found in connected client list");
+            Assert.IsFalse(clients.Contains(pingFalse), "pingFalse client found in connected client list");
 
-			MockClient simpleJobClient = new MockClient { 
-				RunJobOverride = (IJob job) => {
-					simpleJobCalled = true;
-					return new SimpleImplementations.SimpleResult (true, simpleJobParams, job);
-				}
-			};
+            //check IsClientConnected method
+            Assert.IsTrue(server.IsClientConnected(pingTrue), "pingTrue client not showing as connected");
+            Assert.IsTrue(server.PingClient(pingTrue), "pingTrue client not pinging as expected");
+            Assert.IsFalse(server.IsClientConnected(pingFalse), "pingTrue client not showing as connected");
+            Assert.IsFalse(server.PingClient(pingFalse), "pingFalse client not pinging as expected");
 
-			server.AddClient (simpleJobClient);
-			IServerResult result = server.RubJob (new MockJob ());
-			Assert.IsNotNull (result, "Server result was null");
+            //set pingFalseToNowConnect
+            pingFalse.PingOverride = true;
+            expectedCount = 2;
+            clients = server.GetConnectedClients().ToList();
+            actualCount = clients.Count();
+            Assert.AreEqual(expectedCount, actualCount, "Expected {0} clinets after adding clients, got {1} not checking ping on clients", expectedCount, actualCount);
+            Assert.IsTrue(clients.Contains(pingTrue), "pingTrue client not found in connected client list");
+            Assert.IsTrue(clients.Contains(pingFalse), "pingTrue client not found in connected client list");
+            KillServer(server);
+        }
 
-			//check the method actually ran
-			Assert.IsTrue (simpleJobCalled, "The \"called\" variable was not set, so the client run job method was not called");
+        [Test]
+        public void RunJobCallsClientsMethod() {
 
-			//check results back
-			Assert.IsTrue (result.ClientResults.ContainsKey (simpleJobClient), "ClientResults does not contain simpleJobClient");
-			Assert.IsTrue (result.ClientResults [simpleJobClient].Success, "simpleJobClient result was not true");
+            bool simpleJobCalled = false;
+            var simpleJobParams = new Dictionary<string, string> {
+                { "param1", "val1" }, { "param2", "val2" }, { "param3", "val3" }, { "param4", "val4" }
+            };
 
-			//check all the params are there
-			foreach (string key in simpleJobParams.Keys) {
-				Assert.AreEqual (simpleJobParams [key], result.ClientResults [simpleJobClient].Result [key], "The key {0} was not found in the dictionary", key);
-			}
+            MockClient simpleJobClient = new MockClient {
+                RunJobOverride = (IJob job) => {
+                    simpleJobCalled = true;
+                    return new SimpleImplementations.SimpleResult(true, simpleJobParams, job);
+                }
+            };
 
-			KillServer (server);
-		}
+            server.AddClient(simpleJobClient);
+            IServerResult result = server.RubJob(new MockJob());
+            Assert.IsNotNull(result, "Server result was null");
 
-		[Test]
-		public void AllClientsRunJob () {
-			var server = CreateServer ();
+            //check the method actually ran
+            Assert.IsTrue(simpleJobCalled, "The \"called\" variable was not set, so the client run job method was not called");
 
-			var clientsToRunResults = new Dictionary<int, bool> ();
+            //check results back
+            Assert.IsTrue(result.ClientResults.ContainsKey(simpleJobClient), "ClientResults does not contain simpleJobClient");
+            Assert.IsTrue(result.ClientResults[simpleJobClient].Success, "simpleJobClient result was not true");
 
-			var simpleJobParams = new Dictionary<string,string> {
-				{ "param1", "val1" }, { "param2", "val2" }, { "param3", "val3" }, { "param4", "val4" }
-			};
+            //check all the params are there
+            foreach(string key in simpleJobParams.Keys) {
+                Assert.AreEqual(simpleJobParams[key], result.ClientResults[simpleJobClient].Result[key], "The key {0} was not found in the dictionary", key);
+            }
 
-			for (int i = 0; i < 10; i++) {
-				var client = new MockClient (i.ToString (), i);
-				//add to collection, set has rtun to false
-				clientsToRunResults.Add (client.Id, true);
+            KillServer(server);
+        }
 
-				client.RunJobOverride = (IJob job) => {
-					//now it's run, set to true
-					clientsToRunResults [client.Id] = true;
-					return new SimpleImplementations.SimpleResult (true, simpleJobParams, job);
-				};
-				server.AddClient (client);
-			}
+        [Test]
+        public void AllClientsRunJob() {
 
-			IServerResult result = server.RubJob (new MockJob ());
+            var clientsToRunResults = new Dictionary<int, bool>();
 
-			foreach (var kvp in clientsToRunResults) {
-				Assert.IsTrue (kvp.Value, "The client {0} did not run as expected");
-			}
-			Assert.IsTrue (result.Success, "A client did not report a success");
+            var simpleJobParams = new Dictionary<string, string> {
+                { "param1", "val1" }, { "param2", "val2" }, { "param3", "val3" }, { "param4", "val4" }
+            };
 
-			KillServer (server);
-		}
+            for(int i = 0; i < 10; i++) {
+                var client = new MockClient(i.ToString(), i);
+                //add to collection, set has rtun to false
+                clientsToRunResults.Add(client.Id, true);
 
-		[Test] //clients throwing an error does not bork the method
-		public void ErorringClientdoesNotKillServerTest () {
-			var server = CreateServer ();
-			var simpleJobParams = new Dictionary<string,string> {
-				{ "param1", "val1" }, { "param2", "val2" }, { "param3", "val3" }, { "param4", "val4" }
-			};
+                client.RunJobOverride = (IJob job) => {
+                    //now it's run, set to true
+                    clientsToRunResults[client.Id] = true;
+                    return new SimpleImplementations.SimpleResult(true, simpleJobParams, job);
+                };
+                server.AddClient(client);
+            }
 
-			MockClient successfullClient = new MockClient { 
-				RunJobOverride = (IJob job) => {
-					return new SimpleImplementations.SimpleResult (true, simpleJobParams, job);
-				}
-			};
+            IServerResult result = server.RubJob(new MockJob());
 
-			MockClient failingClient = new MockClient { 
-				RunJobOverride = (IJob job) => {
-					throw new InvalidOperationException ("TestError");
-				}
-			};
+            foreach(var kvp in clientsToRunResults) {
+                Assert.IsTrue(kvp.Value, "The client {0} did not run as expected");
+            }
+            Assert.IsTrue(result.Success, "A client did not report a success");
 
-			server.AddClient (successfullClient);
-			server.AddClient (failingClient);
+            KillServer(server);
+        }
 
-			IServerResult result = server.RubJob (new MockJob ());
-			Assert.IsNotNull (result, "Server result was null");
+        [Test] //clients throwing an error does not bork the method
+		public void ErorringClientdoesNotKillServerTest() {
+            var server = CreateServer();
+            var simpleJobParams = new Dictionary<string, string> {
+                { "param1", "val1" }, { "param2", "val2" }, { "param3", "val3" }, { "param4", "val4" }
+            };
 
-			//check the method actually ran
+            MockClient successfullClient = new MockClient {
+                RunJobOverride = (IJob job) => {
+                    return new SimpleImplementations.SimpleResult(true, simpleJobParams, job);
+                }
+            };
 
-			//check results back
-			Assert.IsTrue (result.ClientResults.ContainsKey (successfullClient), "ClientResults does not contain successfullClient");
-			Assert.IsTrue (result.ClientResults [successfullClient].Success, "successfullClient result was not true");
+            MockClient failingClient = new MockClient {
+                RunJobOverride = (IJob job) => {
+                    throw new InvalidOperationException("TestError");
+                }
+            };
 
-			Assert.IsTrue (result.ClientResults.ContainsKey (failingClient), "ClientResults does not contain failingClient");
-			Assert.IsFalse (result.ClientResults [failingClient].Success, "failingClient result was true");
+            server.AddClient(successfullClient);
+            server.AddClient(failingClient);
 
-			KillServer (server);
-		}
+            IServerResult result = server.RubJob(new MockJob());
+            Assert.IsNotNull(result, "Server result was null");
 
-		//clients are run on diffirent threads
-		[Test] //clients throwing an error does not bork the method
-		public void JobsAreRunInParalellTest () {
-			var server = CreateServer ();
-			var simpleJobParams = new Dictionary<string,string> {
-				{ "param1", "val1" }, { "param2", "val2" }, { "param3", "val3" }, { "param4", "val4" }
-			};
+            //check the method actually ran
 
-			TimeSpan shortTimespan = TimeSpan.FromMilliseconds (300);//needs to be long enough for tests to actuall run
-			TimeSpan longTimespan = TimeSpan.FromMilliseconds (shortTimespan.Milliseconds * 3);
+            //check results back
+            Assert.IsTrue(result.ClientResults.ContainsKey(successfullClient), "ClientResults does not contain successfullClient");
+            Assert.IsTrue(result.ClientResults[successfullClient].Success, "successfullClient result was not true");
 
-			MockClient shortWaitClient = new MockClient { 
-				RunJobOverride = (IJob job) => {
-					System.Threading.Thread.Sleep (shortTimespan);
-					return new SimpleImplementations.SimpleResult (true, simpleJobParams, job);
-				}
-			};
+            Assert.IsTrue(result.ClientResults.ContainsKey(failingClient), "ClientResults does not contain failingClient");
+            Assert.IsFalse(result.ClientResults[failingClient].Success, "failingClient result was true");
 
-			MockClient longWaitClient = new MockClient { 
-				RunJobOverride = (IJob job) => {
-					System.Threading.Thread.Sleep (longTimespan);
-					return new SimpleImplementations.SimpleResult (true, simpleJobParams, job);
-				}
-			};
+            KillServer(server);
+        }
 
-			server.AddClient (shortWaitClient);
-			server.AddClient (longWaitClient);
+        //clients are run on diffirent threads
+        [Test] //clients throwing an error does not bork the method
+		public void JobsAreRunInParalellTest() {
+            var simpleJobParams = new Dictionary<string, string> {
+                { "param1", "val1" }, { "param2", "val2" }, { "param3", "val3" }, { "param4", "val4" }
+            };
 
-			var sw = System.Diagnostics.Stopwatch.StartNew ();
-			server.RubJob (new MockJob ());
-			sw.Stop ();
+            TimeSpan shortTimespan = TimeSpan.FromMilliseconds(300);//needs to be long enough for tests to actuall run
+            TimeSpan longTimespan = TimeSpan.FromMilliseconds(shortTimespan.TotalMilliseconds * 3);
 
-			Assert.IsTrue (sw.Elapsed < (shortTimespan + longTimespan), "Server did not run tests in parallel");
-			Assert.IsTrue (sw.Elapsed > shortTimespan, "Server time to run tests was shorter than expected");
+            MockClient shortWaitClient1 = new MockClient {
+                RunJobOverride = (IJob job) => {
+                    System.Threading.Thread.Sleep(shortTimespan);
+                    return new SimpleImplementations.SimpleResult(true, simpleJobParams, job);
+                }
+            };
 
-			KillServer (server);
-		}
+            MockClient shortWaitClient2 = new MockClient {
+                RunJobOverride = (IJob job) => {
+                    System.Threading.Thread.Sleep(shortTimespan);
+                    return new SimpleImplementations.SimpleResult(true, simpleJobParams, job);
+                }
+            };
 
+            MockClient longWaitClient1 = new MockClient {
+                RunJobOverride = (IJob job) => {
+                    System.Threading.Thread.Sleep(longTimespan);
+                    return new SimpleImplementations.SimpleResult(true, simpleJobParams, job);
+                }
+            };
 
+            MockClient longWaitClient2 = new MockClient {
+                RunJobOverride = (IJob job) => {
+                    System.Threading.Thread.Sleep(longTimespan);
+                    return new SimpleImplementations.SimpleResult(true, simpleJobParams, job);
+                }
+            };
 
-		//other tests to add
-		//a lot more!
-	}
+            server.AddClient(shortWaitClient1);
+            server.AddClient(shortWaitClient2);
+            server.AddClient(longWaitClient1);
+            server.AddClient(longWaitClient2);
+
+            long resultTimeTaken = server.RubJob(new MockJob()).TimeTaken.Ticks;
+            long threasholdTicks = (long)longTimespan.Ticks * 2; //should be less than the two long ones combined
+            Assert.IsTrue(resultTimeTaken < threasholdTicks, "Server did not run tests in parallel");
+            Assert.IsTrue(threasholdTicks > shortTimespan.Ticks, "Server time to run tests was shorter than expected");
+
+            KillServer(server);
+        }
+
+        [Test]
+        public void StartThreadedCreatsAThreadAndDoesNotBlock() {
+            Assert.IsFalse(server.IsRunningThreadded(), "Server is running in threading mode before it's been started");
+            server.StartThreaded();
+            Assert.IsTrue(server.IsRunningThreadded(), "Server is not running in threading mode after been told to start");
+            server.Stop();
+            Assert.IsFalse(server.IsRunningThreadded(), "Server is running in threading mode after being told to stop");
+        }
+
+        [Test]
+        public void ServerCanHandleMultipleClientsWhileThreading() {
+            server.StartThreaded();
+
+            var client1 = new RemoteClient();
+            client1.StartThreaded(IPAddress.Loopback, ServerPort);
+
+            var client2 = new RemoteClient();
+            client2.StartThreaded(IPAddress.Loopback, ServerPort);
+
+            bool client1Run = false;
+            bool client2Run = false;
+
+            client1.RequestProcessed += (sender, args) => {
+                client1Run = true;
+            };
+
+            client2.RequestProcessed += (sender, args) => {
+                client2Run = true;
+            };
+			
+            System.Threading.Thread.Sleep(250);
+
+            Assert.AreEqual(2, server.GetConnectedClients().Count(), "Both servers have not connected");
+
+            var result = server.RubJob(new MockJob());
+            Assert.IsTrue(result.Success, "client did not mark job as success");
+            Assert.IsTrue(client1Run, "client1 did not fire processed event");
+            Assert.IsTrue(client2Run, "client2 did not fire processed event");
+
+            KillServer(server);
+        }
+        //other tests to add
+        //a lot more!
+    }
 }
 
