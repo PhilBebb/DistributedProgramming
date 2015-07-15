@@ -292,18 +292,19 @@ namespace UnitTests {
             KillServer(server);
         }
 
-        [Test]
-        public void StartThreadedCreatsAThreadAndDoesNotBlock() {
-            Assert.IsFalse(server.IsRunningThreadded(), "Server is running in threading mode before it's been started");
-            server.StartThreaded();
-            Assert.IsTrue(server.IsRunningThreadded(), "Server is not running in threading mode after been told to start");
-            server.Stop();
-            Assert.IsFalse(server.IsRunningThreadded(), "Server is running in threading mode after being told to stop");
-        }
+        //        [Test] //test is no longer valid, statemachine is threaded
+
+        //        public void StartThreadedCreatsAThreadAndDoesNotBlock() {
+        //            Assert.IsFalse(server.IsRunningThreadded(), "Server is running in threading mode before it's been started");
+        //            server.StartThreaded();
+        //            Assert.IsTrue(server.IsRunningThreadded(), "Server is not running in threading mode after been told to start");
+        //            server.Stop();
+        //            Assert.IsFalse(server.IsRunningThreadded(), "Server is running in threading mode after being told to stop");
+        //        }
 
         [Test]
         public void ServerCanHandleMultipleClientsWhileThreading() {
-            server.StartThreaded();
+            server.Start();
 
             var client1 = new RemoteClient();
             client1.StartThreaded(IPAddress.Loopback, ServerPort);

@@ -39,12 +39,16 @@
     <Compile Include="Client\RemoteClient.cs" />
     <Compile Include="Server\Server.cs" />
     <Compile Include="Internal\InternalHelper.cs" />
+    <Compile Include="Networking\NetworkStateEnum.cs" />
+    <Compile Include="Networking\NetworkStateMachine.cs" />
+    <Compile Include="Networking\NetworkStateData.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Server\" />
     <Folder Include="Client\" />
     <Folder Include="Internal\" />
+    <Folder Include="Networking\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Capabilities\Capabilities.csproj">

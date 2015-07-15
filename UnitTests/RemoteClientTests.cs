@@ -31,7 +31,7 @@ namespace UnitTests {
             receivedCount = 0;
             proccessedCount = 0;
             server = RemoteServerTests.CreateServer();
-            server.StartThreaded();
+            server.Start();
 
             client = new RemoteImplementations.RemoteClient();
             client.RequestReceived += client_RequestReceived;
