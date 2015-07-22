@@ -89,7 +89,7 @@ namespace RemoteImplementations {
         private async void ListenForServer() {
             while (true) {
                 Console.WriteLine("Waiting for job");
-                var job = await InternalHelper.ReadJobAsJsonAsync(_client);
+                var job = await InternalHelper.ReadJobAsJsonAsync(_client.GetStream());
                 if(RequestReceived != null) {
                     RequestReceived(this, new RequestReceivedEventArgs { Request = job });
                 }
@@ -102,7 +102,7 @@ namespace RemoteImplementations {
                                  );
 
                 Console.WriteLine("Sending result");
-                InternalHelper.SendJson(Helpers.Helper.ResultToJson(result), _client);
+                InternalHelper.SendJson(Helpers.Helper.ResultToJson(result), _client.GetStream());
                 if(RequestProcessed != null) {
                     RequestProcessed(this, new RequestProcessedEventArgs { Result = result });
                 }
