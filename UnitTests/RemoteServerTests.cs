@@ -327,27 +327,42 @@ namespace UnitTests {
             var client2 = new RemoteClient();
             client2.StartThreaded(IPAddress.Loopback, ServerPort);
 
-            bool client1Run = false;
-            bool client2Run = false;
+            int client1RunCount = 0;
+            int client2RunCount = 0;
 
             client1.RequestProcessed += (sender, args) => {
-                client1Run = true;
+                client1RunCount++;
             };
 
+
             client2.RequestProcessed += (sender, args) => {
-                client2Run = true;
+                client2RunCount++;
             };
 			
             //this apparently isn't enough time, set to 3 seconds and it passes
             //need to find out why
-            System.Threading.Thread.Sleep(1000);
+            //depends a lot on debug/release :/
+           
+            int clientConnectedCount = 0;
 
-            Assert.AreEqual(2, server.GetConnectedClients().Count(), "Both servers have not connected");
+            for(int i = 0; i < 100; i++) {
+                clientConnectedCount = server.GetConnectedClients().Count();
+                if(clientConnectedCount > 1) {
+                    break;
+                }
+            }
+
+            Assert.AreEqual(2, clientConnectedCount, "Both servers have not connected");
 
             var result = server.RubJob(new MockJob());
             Assert.IsTrue(result.Success, "client did not mark job as success");
-            Assert.IsTrue(client1Run, "client1 did not fire processed event");
-            Assert.IsTrue(client2Run, "client2 did not fire processed event");
+            Assert.AreEqual(1, client1RunCount, "client1 did not fire processed event");
+            Assert.AreEqual(1, client2RunCount, "client2 did not fire processed event");
+
+            result = server.RubJob(new MockJob());
+            Assert.IsTrue(result.Success, "client did not mark job as success");
+            Assert.AreEqual(2, client1RunCount, "client1 did not fire processed event");
+            Assert.AreEqual(2, client2RunCount, "client2 did not fire processed event");
 
             KillServer(server);
         }
