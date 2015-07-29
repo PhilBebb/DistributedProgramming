@@ -6,7 +6,7 @@ using Interfaces.Shared.Capabilities;
 using System.Net.Sockets;
 using System.IO;
 using System.Threading.Tasks;
-using RemoteImplementations.Networking;
+using RemoteImplementations.Internal;
 
 namespace RemoteImplementations {
 
@@ -15,9 +15,9 @@ namespace RemoteImplementations {
     /// Will require a RemoteClient on the other side to actually talk to
     /// </summary>
     public class RemoteNetworkedClient : IClient {
-        private NetworkStateData _client = null;
+        private TcpClient _client = null;
 
-        public RemoteNetworkedClient(NetworkStateData client, string name) {
+        public RemoteNetworkedClient(TcpClient client, string name) {
             Name = name;
             _client = client;
 
@@ -29,9 +29,9 @@ namespace RemoteImplementations {
         public IResult RunJob(IJob job) {
             string jsonJob = Helpers.Helper.JobToJson(job);
 
-            InternalHelper.SendJson(jsonJob, _client);
+            InternalHelper.SendMessage(jsonJob, _client.GetStream());
 
-            var result = InternalHelper.ReadResultAsJson(_client);
+            var result = InternalHelper.ReadResultAsJson(_client.GetStream());
             return result;
         }
 

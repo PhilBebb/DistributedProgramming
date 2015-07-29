@@ -42,6 +42,10 @@
     <Compile Include="Networking\NetworkStateEnum.cs" />
     <Compile Include="Networking\NetworkStateMachine.cs" />
     <Compile Include="Networking\NetworkStateData.cs" />
+    <Compile Include="Pipelining\Pipe.cs" />
+    <Compile Include="Pipelining\AuthenticationPipe.cs" />
+    <Compile Include="Pipelining\ClientConnectingPipe.cs" />
+    <Compile Include="Pipelining\ClientConnectedPipe.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -49,6 +53,7 @@
     <Folder Include="Client\" />
     <Folder Include="Internal\" />
     <Folder Include="Networking\" />
+    <Folder Include="Pipelining\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Capabilities\Capabilities.csproj">

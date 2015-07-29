@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Interfaces.Shared;
+using RemoteImplementations.Internal;
 using SimpleImplementations;
 
 namespace RemoteImplementations {
@@ -46,22 +47,17 @@ namespace RemoteImplementations {
             Console.WriteLine("Starting");
             _client.Connect(address, port);
             Console.WriteLine("Connected");
-
-            SendHelloAsync();
-
+           
             ListenForServer();
         }
 
         public void StartThreaded(IPAddress address, int port) {
             Console.WriteLine("Starting");
-            _client.ConnectAsync(address, port);
+            _client.Connect(address, port);
             Console.WriteLine("Connected");
-
-            SendHelloAsync();
 
             StopListenerThread();
             StartListenerThread();
-
         }
 
         public void Stop() {
@@ -87,31 +83,57 @@ namespace RemoteImplementations {
         }
 
         private async void ListenForServer() {
-            while (true) {
-                Console.WriteLine("Waiting for job");
-                var job = await InternalHelper.ReadJobAsJsonAsync(_client.GetStream());
-                if(RequestReceived != null) {
-                    RequestReceived(this, new RequestReceivedEventArgs { Request = job });
-                }
-                Console.WriteLine("job get!");
+           
+            Console.WriteLine("Waiting for hello");
 
-                IResult result = new SimpleResult(
-                                     true,
-                                     new Dictionary<string, string> { { "p1", "a" }, { "p2", "b" } },
-                                     job
-                                 );
-
-                Console.WriteLine("Sending result");
-                InternalHelper.SendJson(Helpers.Helper.ResultToJson(result), _client.GetStream());
-                if(RequestProcessed != null) {
-                    RequestProcessed(this, new RequestProcessedEventArgs { Result = result });
-                }
-                Console.WriteLine("Result sent");
+            string hello = await InternalHelper.ReadJsonAsync(_client.GetStream());
+            Console.WriteLine("Got response from server\n{0}", hello);
+              
+            SendAuthsync();
+            if(!CheckAuth()) {
+                // do something?
+                throw new InvalidOperationException("not authed");
             }
+
+            while (_client.Connected) {
+                Console.WriteLine("Waiting for job");
+
+                try {
+                    var job = await InternalHelper.ReadJobAsJsonAsync(_client.GetStream());
+                    if(RequestReceived != null) {
+                        RequestReceived(this, new RequestReceivedEventArgs { Request = job });
+                    }
+                    Console.WriteLine("job get!");
+
+                    IResult result = new SimpleResult(
+                                         true,
+                                         new Dictionary<string, string> { { "p1", "a" }, { "p2", "b" } },
+                                         job
+                                     );
+
+                    Console.WriteLine("Sending result");
+                    InternalHelper.SendMessage(Helpers.Helper.ResultToJson(result), _client.GetStream());
+
+                    if(RequestProcessed != null) {
+                        RequestProcessed(this, new RequestProcessedEventArgs { Result = result });
+                    }
+
+                    Console.WriteLine("Result sent");
+                } catch(Exception ex) {                    
+                }
+            }
+            Console.WriteLine("Client disconected");
+           
         }
 
-        private async Task<bool> SendHelloAsync() {
+        private async Task<bool> SendAuthsync() {
+            Internal.InternalHelper.SendMessage("open", _client.GetStream());
             return true;
+        }
+
+        private bool CheckAuth() {
+            var message = InternalHelper.ReadJsonAsync(_client.GetStream()).Result;
+            return message.ToUpperInvariant().Contains("SUCCESS");
         }
 
         public event RequestReceivedEventHandle RequestReceived;

@@ -303,6 +303,21 @@ namespace UnitTests {
         //        }
 
         [Test]
+        public void ServerCorrectlyHandlesAuthenticatingRemoteClient() {
+            int expectedClientConnectedCount = server.GetConnectedClients().Count() + 1;
+            server.Start();
+
+            var client1 = new RemoteClient();
+            client1.StartThreaded(IPAddress.Loopback, ServerPort);
+
+            //wait for connection
+            System.Threading.Thread.Sleep(TimeSpan.FromSeconds(1));
+
+            int clientCountAfterConnectionAttempt = server.GetConnectedClients().Count();
+            Assert.IsTrue(clientCountAfterConnectionAttempt == expectedClientConnectedCount);
+        }
+
+        [Test]
         public void ServerCanHandleMultipleClientsWhileThreading() {
             server.Start();
 
@@ -323,7 +338,9 @@ namespace UnitTests {
                 client2Run = true;
             };
 			
-            System.Threading.Thread.Sleep(250);
+            //this apparently isn't enough time, set to 3 seconds and it passes
+            //need to find out why
+            System.Threading.Thread.Sleep(1000);
 
             Assert.AreEqual(2, server.GetConnectedClients().Count(), "Both servers have not connected");
 

@@ -5,33 +5,33 @@ using System.Threading.Tasks;
 using Interfaces.Shared;
 using System.Text;
 
-namespace RemoteImplementations {
+namespace RemoteImplementations.Internal {
     internal static class InternalHelper {
         
-        internal static void SendJson(string json, Stream stream) {
-            if(string.IsNullOrWhiteSpace(json))
+        internal static void SendMessage(string message, Stream stream) {
+            if(string.IsNullOrWhiteSpace(message))
                 return;
 
-            Console.WriteLine("starting SendJson");
+            Console.WriteLine("starting SendMessage");
 
-            byte[] buffer = GetBytes(json);
+            byte[] buffer = GetBytes(message);
             stream.Write(buffer, 0, buffer.Length);
             stream.Flush();
 
-            Console.WriteLine("wrote from SendJson");
+            Console.WriteLine("wrote from SendMessage");
         }
 
-        internal static async Task SendJsonAsync(string json, Stream stream) {
-            if(string.IsNullOrWhiteSpace(json))
+        internal static async Task SendMessageAsync(string message, Stream stream) {
+            if(string.IsNullOrWhiteSpace(message))
                 return;
 
-            Console.WriteLine("starting SendJsonAsync");
+            Console.WriteLine("starting SendMessageAsync");
 
-            byte[] buffer = GetBytes(json);
-            stream.Write(buffer, 0, buffer.Length);
+            byte[] buffer = GetBytes(message);
+            await stream.WriteAsync(buffer, 0, buffer.Length);
             stream.Flush();
 
-            Console.WriteLine("wrote from SendJsonAsync");
+            Console.WriteLine("wrote from SendMessageAsync");
         }
 
         internal static async Task<IResult> ReadResultAsJsonAsync(Stream steam) {
@@ -64,6 +64,18 @@ namespace RemoteImplementations {
 
             Console.WriteLine("exit reading");
             return conversion.Invoke(sb.ToString());
+        }
+
+        internal static string ReadJson(Stream stream) {
+            return ReadJsonAsAsync<string>(stream, (s) => {
+                return s;
+            }).Result;
+        }
+
+        internal static Task<string> ReadJsonAsync(Stream stream) {
+            return ReadJsonAsAsync<string>(stream, (s) => {
+                return s;
+            });
         }
 
         internal static byte[] GetBytes(string str) {

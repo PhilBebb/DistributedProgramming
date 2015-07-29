@@ -51,8 +51,17 @@ namespace UnitTests {
 
             //wait for a request
             client.StartThreaded(IPAddress.Loopback, RemoteServerTests.ServerPort);
-            System.Threading.Thread.Sleep(250); //wait for connect
-            Assert.AreEqual(1, server.GetConnectedClients().Count());
+
+            //wait for connect, using Thread.Sleep was inconsitant
+            int connectedCount = 0;
+            for(int i = 0; i < 100; i++) {
+                connectedCount = server.GetConnectedClients().Count();
+                if(connectedCount > 0) {
+                    break;
+                }
+            }
+
+            Assert.AreEqual(1, connectedCount);
 
             IJob job = new MockJob();
             server.RubJob(job);
@@ -68,7 +77,8 @@ namespace UnitTests {
         public void StartThreadedCreatsAThreadAndDoesNotBlock() {
             Assert.IsFalse(client.IsRunningThreadded(), "Client is running in threading mode before it's been started");
             client.StartThreaded(IPAddress.Loopback, RemoteServerTests.ServerPort);
-            Assert.IsTrue(client.IsRunningThreadded(), "Client is not running in threading mode after been told to start");
+            bool runningThreaded = client.IsRunningThreadded();
+            Assert.IsTrue(runningThreaded, "Client is not running in threading mode after been told to start");
             client.Stop();
             Assert.IsFalse(client.IsRunningThreadded(), "Client is running in threading mode after being told to stop");
         }
