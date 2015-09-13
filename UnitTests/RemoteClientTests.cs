@@ -75,8 +75,17 @@ namespace UnitTests {
 
         [Test]
         public void StartThreadedCreatsAThreadAndDoesNotBlock() {
+
+            //this test is flaky as fuck
+            //probably giving false negatives
+
             Assert.IsFalse(client.IsRunningThreadded(), "Client is running in threading mode before it's been started");
             client.StartThreaded(IPAddress.Loopback, RemoteServerTests.ServerPort);
+
+            for(int i = 0; i < 100; i++) {
+                Console.WriteLine(i);
+            }
+
             bool runningThreaded = client.IsRunningThreadded();
             Assert.IsTrue(runningThreaded, "Client is not running in threading mode after been told to start");
             client.Stop();

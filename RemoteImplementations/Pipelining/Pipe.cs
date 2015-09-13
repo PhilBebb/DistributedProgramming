@@ -16,7 +16,10 @@ namespace RemoteImplementations.Pipelining {
         /// <param name="tcpClient">Tcp client.</param>
         public virtual void HandleRequest(TcpClient tcpClient) {
             FireEvents(tcpClient);
-            Next.HandleRequest(tcpClient);
+
+            if(Next != null) {
+                Next.HandleRequest(tcpClient);
+            }
         }
 
         /// <summary>

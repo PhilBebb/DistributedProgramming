@@ -334,14 +334,13 @@ namespace UnitTests {
                 client1RunCount++;
             };
 
-
             client2.RequestProcessed += (sender, args) => {
                 client2RunCount++;
             };
 			
             //this apparently isn't enough time, set to 3 seconds and it passes
             //need to find out why
-            //depends a lot on debug/release :/
+            //depends a lot on debug/release :/ 
            
             int clientConnectedCount = 0;
 
@@ -368,6 +367,39 @@ namespace UnitTests {
         }
         //other tests to add
         //a lot more!
+
+        [Test]
+        public void ClientThatSendsBadAuthIsNotLoggedIn() {
+            server.Start();
+
+            Assert.AreEqual(0, server.GetConnectedClients().Count(), "Client connected before any told to connect");
+
+            var client1 = new RemoteClient();
+            client1.StartThreaded(IPAddress.Loopback, ServerPort);
+
+            int connectedClients = 0;
+            for(int i = 0; i < 100; i++) {
+                connectedClients = server.GetConnectedClients().Count();
+                if(connectedClients > 0) {
+                    break;
+                }
+            }
+            Assert.AreEqual(1, server.GetConnectedClients().Count(), "Client did not connect");
+
+
+            var client2 = new MockRemoteClientBadAuth();
+
+            client2.StartThreaded(IPAddress.Loopback, ServerPort);
+
+            for(int i = 0; i < 100; i++) {
+                connectedClients = server.GetConnectedClients().Count();
+                if(connectedClients > 1) {
+                    break;
+                }
+            }
+            Assert.AreEqual(1, server.GetConnectedClients().Count(), "Client connect with bad auth");
+        }
+
     }
 }
 

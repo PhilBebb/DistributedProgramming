@@ -41,6 +41,9 @@
     <Compile Include="ResultTests\SimpleServerResultsTest.cs" />
     <Compile Include="HelperTests\HelperTests.cs" />
     <Compile Include="Mocks\MockCapability.cs" />
+    <Compile Include="Mocks\MockRemoteClientBadAuth.cs" />
+    <Compile Include="PipelineTests.cs" />
+    <Compile Include="Mocks\MockPipe.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

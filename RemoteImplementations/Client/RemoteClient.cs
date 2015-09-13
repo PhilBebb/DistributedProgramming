@@ -17,6 +17,8 @@ namespace RemoteImplementations {
         private TcpClient _client = null;
         private Thread _receiverThread = null;
 
+        protected TcpClient Client { get { return _client; } }
+
         private void StartListenerThread() {
             if(_receiverThread == null) {
                 lock(this) {
@@ -92,7 +94,8 @@ namespace RemoteImplementations {
             SendAuthsync();
             if(!CheckAuth()) {
                 // do something?
-                throw new InvalidOperationException("not authed");
+                //this is a bad idea as it's hard to catch exceptions from other threads
+                //throw new InvalidOperationException("not authed");
             }
 
             while (_client.Connected) {
@@ -126,9 +129,13 @@ namespace RemoteImplementations {
            
         }
 
-        private async Task<bool> SendAuthsync() {
-            Internal.InternalHelper.SendMessage("open", _client.GetStream());
+        protected virtual async Task<bool> SendAuthsync() {
+            SendMessage("open");
             return true;
+        }
+
+        protected void SendMessage(string message) {
+            Internal.InternalHelper.SendMessage(message, _client.GetStream());
         }
 
         private bool CheckAuth() {
